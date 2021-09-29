@@ -62,46 +62,53 @@ func protocol(cmd *cobra.Command, args []string) error {
 
 	for input != quitMarker && err == nil {
 
-		// Append new entry
-		markerType, isType := protocolEntryType[input]
-		if isType {
-			if err = createEntry(&protocolEntries, markerType); err != nil {
-				return err
-			}
-		}
+		err = handleNextCmd(input, protocolEntries)
 
-		// Remove entry
-		if input == removeMarker {
-			removeEntry(&protocolEntries)
+		if err == nil {
+			printUsage()
+			input, err = reader.ReadString('\n')
+			input = strings.TrimSpace(input)
 		}
-
-		// Edit entry
-		if input != removeMarker && !isType {
-			fmt.Println(input)
-			possibleIndex, err := strconv.Atoi(input)
-			fmt.Println(possibleIndex)
-			if err == nil && possibleIndex < len(protocolEntries) {
-				editEntry(&protocolEntries, possibleIndex)
-			}
-		}
-
-		printUsage()
-		input, err = reader.ReadString('\n')
-		input = strings.TrimSpace(input)
 	}
 
 	return err
 }
 
-func createEntry(entries *[]protocolEntry, markerType string) error {
+func handleNextCmd(input string, protocolEntries []protocolEntry) error {
+	// Append new entry
+	markerType, isType := protocolEntryType[input]
+	if isType {
+		if err := createEntry(protocolEntries, markerType); err != nil {
+			return err
+		}
+	}
+
+	// Remove entry
+	if input == removeMarker {
+		removeEntry(protocolEntries)
+	}
+
+	// Edit entry
+	if input != removeMarker && !isType {
+		fmt.Println(input)
+		possibleIndex, err := strconv.Atoi(input)
+		fmt.Println(possibleIndex)
+		if err == nil && possibleIndex < len(protocolEntries) {
+			editEntry(protocolEntries, possibleIndex)
+		}
+	}
+	return nil
+}
+
+func createEntry(entries []protocolEntry, markerType string) error {
 	fmt.Printf("Create entry of type '%s'\n", markerType)
 	return nil
 }
 
-func removeEntry(protocolEntries *[]protocolEntry) {
+func removeEntry(protocolEntries []protocolEntry) {
 	fmt.Println("Delete an entry ...")
 }
 
-func editEntry(protocolEntries *[]protocolEntry, index int) {
+func editEntry(protocolEntries []protocolEntry, index int) {
 	fmt.Printf("Edit entry %d\n", index)
 }
