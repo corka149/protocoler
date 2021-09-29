@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
+	"strconv"
+	"strings"
+	"time"
 )
 
 func Execute() {
@@ -22,25 +25,83 @@ func Execute() {
 	}
 }
 
-
 // ===== PRIVATE =====
 
+type protocolEntry struct {
+	entryType string
+	saidBy    string
+	text      string
+	timestamp time.Time
+}
 
-var marker = map[string]string {
-	"i": "info",
-	"d": "decision",
-	"t": "task",
-	"q": "quit",
+const (
+	infoMarker     = "i"
+	decisionMarker = "d"
+	taskMarker     = "t"
+	removeMarker   = "r"
+	quitMarker     = "q"
+)
+
+var protocolEntryType = map[string]string{
+	infoMarker:     "info",
+	decisionMarker: "decision",
+	taskMarker:     "task",
+}
+
+func printUsage() {
+	fmt.Printf("\nEnter: (i) add Info, (d) add Decision, (t) add Task, (r) Remove entry, (entryId) edit entry OR (q) for Quit: ")
 }
 
 func protocol(cmd *cobra.Command, args []string) error {
 	reader := bufio.NewReader(os.Stdin)
+	printUsage()
 	input, err := reader.ReadString('\n')
+	protocolEntries := make([]protocolEntry, 10)
 
-	for input != "q" && err != nil {
+	input = strings.TrimSpace(input)
 
+	for input != quitMarker && err == nil {
+
+		// Append new entry
+		markerType, isType := protocolEntryType[input]
+		if isType {
+			if err = createEntry(&protocolEntries, markerType); err != nil {
+				return err
+			}
+		}
+
+		// Remove entry
+		if input == removeMarker {
+			removeEntry(&protocolEntries)
+		}
+
+		// Edit entry
+		if input != removeMarker && !isType {
+			fmt.Println(input)
+			possibleIndex, err := strconv.Atoi(input)
+			fmt.Println(possibleIndex)
+			if err == nil && possibleIndex < len(protocolEntries) {
+				editEntry(&protocolEntries, possibleIndex)
+			}
+		}
+
+		printUsage()
 		input, err = reader.ReadString('\n')
+		input = strings.TrimSpace(input)
 	}
 
 	return err
+}
+
+func createEntry(entries *[]protocolEntry, markerType string) error {
+	fmt.Printf("Create entry of type '%s'\n", markerType)
+	return nil
+}
+
+func removeEntry(protocolEntries *[]protocolEntry) {
+	fmt.Println("Delete an entry ...")
+}
+
+func editEntry(protocolEntries *[]protocolEntry, index int) {
+	fmt.Printf("Edit entry %d\n", index)
 }
