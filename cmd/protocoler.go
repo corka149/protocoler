@@ -199,7 +199,30 @@ func removeEntry(lineReader lineReaderFn, protocolEntries []*protocolEntry) ([]*
 	return protocolEntries, nil
 }
 
-func editEntry(lineReader lineReaderFn, protocolEntries []*protocolEntry, index int) {
+func editEntry(lineReader lineReaderFn, protocolEntries []*protocolEntry, index int) ([]*protocolEntry, error) {
+	entry := protocolEntries[index]
 
-	fmt.Printf("Edit entry %d\n", index)
+	fmt.Printf("---Said by ['%s']:\n", entry.saidBy)
+	saidBy, err := lineReader()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(saidBy) > 0 {
+		entry.saidBy = saidBy
+	}
+
+	fmt.Printf("---Note ['%s']:\n", entry.text)
+	note, err := lineReader()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(note) > 0 {
+		entry.text = note
+	}
+
+	return protocolEntries, nil
 }
