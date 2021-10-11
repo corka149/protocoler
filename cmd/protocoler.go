@@ -138,7 +138,7 @@ func handleNextInput(lineReader lineReaderFn, input string, protocolEntries []*p
 		possibleIndex, err := strconv.Atoi(input)
 
 		if err == nil && possibleIndex < len(protocolEntries) {
-			editEntry(lineReader, protocolEntries, possibleIndex)
+			protocolEntries, err = editEntry(lineReader, protocolEntries, possibleIndex)
 		}
 	}
 
@@ -172,7 +172,7 @@ func createEntry(lineReader lineReaderFn, protocolEntries []*protocolEntry, entr
 	}
 
 	protocolEntries = append(protocolEntries, newEntry)
-	fmt.Printf("\nAdded entry with ID %d\n", len(protocolEntries)-1)
+	fmt.Printf("\nAdded entry with ID ~> %d <~\n", len(protocolEntries)-1)
 
 	return protocolEntries, nil
 }
