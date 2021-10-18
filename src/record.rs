@@ -134,10 +134,9 @@ fn remove_entry(mut entries: Vec<Option<ProtocolEntry>>) -> Vec<Option<ProtocolE
     let index = index.unwrap();
 
     if let Ok(possible_index) = index.parse::<usize>() {
-        if possible_index < entries.len() {
-            entries[possible_index] = None;
-        } else {
-            println!("'{}' cannot be a valid index", possible_index)
+        match entries.get(possible_index) {
+            Some(_) => entries[possible_index] = None,
+            None => println!("'{}' cannot be a valid index", possible_index),
         }
     } else {
         println!("'{}' could not be recognized as an possible index", index);
