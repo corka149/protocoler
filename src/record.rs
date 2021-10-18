@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use std::io;
 
 #[derive(PartialEq, Eq)]
@@ -5,6 +6,16 @@ enum EntryType {
     Info,
     Decision,
     Task,
+}
+
+impl Display for EntryType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            EntryType::Info => write!(f, "INFO"),
+            EntryType::Decision => write!(f, "DECISION"),
+            EntryType::Task => write!(f, "TASK"),
+        }
+    }
 }
 
 #[derive(PartialEq, Eq)]
@@ -32,7 +43,7 @@ impl Selection {
     }
 }
 
-struct ProtocolEntry {
+pub struct ProtocolEntry {
     entry_type: EntryType,
     said_by: String,
     text: String,
@@ -87,10 +98,20 @@ impl ProtocolEntry {
     }
 }
 
+impl Display for ProtocolEntry {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} {} - {}: {}",
+            self.timestamp, self.entry_type, self.said_by, self.text
+        )
+    }
+}
+
 const USAGE: &str = "Enter: (i) add Info, (d) add Decision, (t) add Task, (r) Remove entry, (entryId) edit entry OR (q) for Quit: ";
 
 /// Start recording.
-pub fn start() {
+pub fn start() -> Vec<Option<ProtocolEntry>> {
     let mut entries: Vec<Option<ProtocolEntry>> = Vec::new();
 
     while let Ok(selection_str) = input(USAGE) {
@@ -108,7 +129,7 @@ pub fn start() {
         }
     }
 
-    println!("Done");
+    entries
 }
 
 /// Asks for an user for input.

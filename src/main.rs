@@ -13,5 +13,15 @@ fn main() {
         )
         .get_matches();
 
-    record::start();
+    let mut entries = record::start();
+
+    let entries = entries
+        .into_iter()
+        .filter(|e| e.is_none())
+        .map(|e| e.unwrap())
+        .collect::<Vec<record::ProtocolEntry>>();
+
+    for e in entries {
+        println!("{}", e);
+    }
 }
