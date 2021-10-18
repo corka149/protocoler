@@ -60,7 +60,31 @@ impl ProtocolEntry {
     }
 
     /// Updates a protocol entry from stdin.
-    fn change_by_input(&mut self) {}
+    fn change_by_input(&mut self) {
+        let prompt = format!("---Said by ['{}']:", self.said_by);
+
+        match input(&prompt) {
+            Ok(sb) => {
+                // if empty - keep said_by
+                if !sb.trim().is_empty() {
+                    self.said_by = sb;
+                }
+            }
+            Err(err) => println!("{}", err),
+        };
+
+        let prompt = format!("---Note ['{}']:", self.text);
+
+        match input(&prompt) {
+            Ok(new_note) => {
+                // If empty - keep note
+                if !new_note.trim().is_empty() {
+                    self.text = new_note;
+                }
+            }
+            Err(err) => println!("{}", err),
+        };
+    }
 }
 
 const USAGE: &str = "Enter: (i) add Info, (d) add Decision, (t) add Task, (r) Remove entry, (entryId) edit entry OR (q) for Quit: ";
@@ -77,7 +101,7 @@ pub fn start() {
                 Ok(entry) => entries.push(Some(entry)),
                 Err(e) => println!("{}", e),
             },
-            Selection::Edit(index) => {}
+            Selection::Edit(index) => entries = edit_entry(entries, index),
             Selection::Remove => entries = remove_entry(entries),
             Selection::Quit => break,
             Selection::Invalid => println!("I do not understand '{}'", selection_str),
@@ -117,6 +141,24 @@ fn remove_entry(mut entries: Vec<Option<ProtocolEntry>>) -> Vec<Option<ProtocolE
         }
     } else {
         println!("'{}' could not be recognized as an possible index", index);
+    }
+
+    entries
+}
+
+fn edit_entry(mut entries: Vec<Option<ProtocolEntry>>, index: usize) -> Vec<Option<ProtocolEntry>> {
+    if index >= entries.len() {
+        return entries;
+    }
+
+    let entry = &mut entries[index];
+
+    match entry {
+        Some(e) => e.change_by_input(),
+        None => {
+            println!("Entry was already deleted");
+            return entries;
+        }
     }
 
     entries
