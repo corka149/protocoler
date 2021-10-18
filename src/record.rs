@@ -7,23 +7,13 @@ enum EntryType {
     Task,
 }
 
-#[derive(Eq)]
+#[derive(PartialEq, Eq)]
 enum Selection {
     Type(EntryType),
     Remove,
     Edit(usize),
     Quit,
     Invalid,
-}
-
-impl std::cmp::PartialEq for Selection {
-    fn eq(&self, other: &Self) -> bool {
-        self == other
-    }
-
-    fn ne(&self, other: &Self) -> bool {
-        self != other
-    }
 }
 
 impl Selection {
@@ -53,12 +43,12 @@ impl ProtocolEntry {
     /// Creates a new protocol entry.
     fn new(entry_type: EntryType, said_by: String, text: String) -> ProtocolEntry {
         let timestamp = 1;
-        return ProtocolEntry {
+        ProtocolEntry {
             entry_type,
             said_by,
             text,
             timestamp,
-        };
+        }
     }
 
     /// Creates a new protocol entry from stdin.
@@ -66,7 +56,7 @@ impl ProtocolEntry {
         let said_by = input("---Said by:")?;
         let text = input("---Note:")?;
 
-        return Ok(ProtocolEntry::new(entry_type, said_by, text));
+        Ok(ProtocolEntry::new(entry_type, said_by, text))
     }
 
     /// Updates a protocol entry from stdin.
@@ -77,18 +67,18 @@ const USAGE: &str = "Enter: (i) add Info, (d) add Decision, (t) add Task, (r) Re
 
 /// Start recording.
 pub fn start() {
-    let mut entries: Vec<ProtocolEntry> = Vec::new();
+    let mut entries: Vec<Option<ProtocolEntry>> = Vec::new();
 
     while let Ok(selection_str) = input(USAGE) {
         let selection = Selection::from_string(&selection_str);
 
         match selection {
             Selection::Type(entry_type) => match ProtocolEntry::from_input(entry_type) {
-                Ok(entry) => entries.push(entry),
+                Ok(entry) => entries.push(Some(entry)),
                 Err(e) => println!("{}", e),
             },
-            Selection::Edit(index) => entries[index].change_by_input(),
-            Selection::Remove => {}
+            Selection::Edit(index) => {}
+            Selection::Remove => entries = remove_entry(entries),
             Selection::Quit => break,
             Selection::Invalid => println!("I do not understand '{}'", selection_str),
         }
@@ -105,5 +95,29 @@ fn input(prompt: &str) -> Result<String, io::Error> {
     println!("{}", prompt);
     stdin.read_line(&mut buffer)?;
 
-    return Ok(buffer);
+    Ok(buffer)
+}
+
+/// Removes an entry by setting in None to keep the index stable.
+fn remove_entry(mut entries: Vec<Option<ProtocolEntry>>) -> Vec<Option<ProtocolEntry>> {
+    let index = input("---Delete an entry by ID:");
+
+    if let Err(err) = index {
+        println!("{}", err);
+        return entries;
+    }
+
+    let index = index.unwrap();
+
+    if let Ok(possible_index) = index.parse::<usize>() {
+        if possible_index < entries.len() {
+            entries[possible_index] = None;
+        } else {
+            println!("'{}' cannot be a valid index", possible_index)
+        }
+    } else {
+        println!("'{}' could not be recognized as an possible index", index);
+    }
+
+    entries
 }
