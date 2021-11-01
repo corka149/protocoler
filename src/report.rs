@@ -1,14 +1,23 @@
 //! `protocol` creates protocol reports.
 use super::record::ProtocolEntry;
 use super::util::*;
+use std::process::exit;
 
-const ALLOWED_FORMATS: [&str; 3] = ["raw", "markdown", "csv"];
+const RAW_FORMAT: &str = "raw";
+const MARKDOWN_FORMAT: &str = "markdown";
+const CSV_FORMAT: &str = "csv";
+const ALLOWED_FORMATS: [&str; 3] = [RAW_FORMAT, MARKDOWN_FORMAT, CSV_FORMAT];
 
 /// Outputs the protocol entries in different formats.
 pub fn output(protocol_entries: Vec<ProtocolEntry>) {
     match select_format().as_str() {
-        "raw" => print_raw(protocol_entries),
-        _ => unimplemented!("Not yet implemented"),
+        RAW_FORMAT => print_raw(protocol_entries),
+        MARKDOWN_FORMAT => todo!(),
+        CSV_FORMAT => todo!(),
+        unknown => {
+            eprintln!("Unknown format'{}'", unknown);
+            exit(1)
+        }
     }
 }
 
