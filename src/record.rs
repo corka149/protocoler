@@ -67,7 +67,11 @@ impl ProtocolEntry {
         let said_by = input("---Said by:")?;
         let text = input("---Note:")?;
 
-        Ok(ProtocolEntry::new(entry_type, said_by, text))
+        Ok(ProtocolEntry::new(
+            entry_type,
+            said_by.trim().to_string(),
+            text.trim().to_string(),
+        ))
     }
 
     /// Updates a protocol entry from stdin.
@@ -78,7 +82,7 @@ impl ProtocolEntry {
             Ok(sb) => {
                 // if empty - keep said_by
                 if !sb.trim().is_empty() {
-                    self.said_by = sb;
+                    self.said_by = sb.trim().to_string();
                 }
             }
             Err(err) => println!("{}", err),
@@ -90,7 +94,7 @@ impl ProtocolEntry {
             Ok(new_note) => {
                 // If empty - keep note
                 if !new_note.trim().is_empty() {
-                    self.text = new_note;
+                    self.text = new_note.trim().to_string();
                 }
             }
             Err(err) => println!("{}", err),
