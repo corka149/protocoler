@@ -13,11 +13,11 @@ fn main() {
         )
         .get_matches();
 
-    let mut entries = record::start();
+    let entries = record::start();
 
     let entries = entries
         .into_iter()
-        .filter(|e| e.is_none())
+        .filter(|e| e.is_some())
         .map(|e| e.unwrap())
         .collect::<Vec<record::ProtocolEntry>>();
 

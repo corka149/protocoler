@@ -29,7 +29,7 @@ enum Selection {
 
 impl Selection {
     fn from_string(string: &str) -> Selection {
-        match string {
+        match string.trim() {
             "i" => Selection::Type(EntryType::Info),
             "d" => Selection::Type(EntryType::Decision),
             "t" => Selection::Type(EntryType::Task),
