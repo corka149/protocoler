@@ -106,6 +106,34 @@ impl ProtocolEntry {
             Err(err) => println!("{}", err),
         };
     }
+
+    /// Creates a CSV row of the protocol entry.
+    pub fn to_csv(self) -> String {
+        format!(
+            "{},{},{},{}",
+            self.timestamp, self.entry_type, self.said_by, self.text
+        )
+    }
+
+    /// Timestamp of protocol entry.
+    pub fn timestamp(self) -> &DateTime<Local> {
+        &self.timestamp
+    }
+
+    /// Entry type of protocol entry.
+    pub fn entry_type(self) -> &EntryType {
+        &self.entry_type
+    }
+
+    /// Protocol entry was said by.
+    pub fn said_by(self) -> &str {
+        &self.said_by
+    }
+
+    /// Text of protocol entry.
+    pub fn text(self) -> &str {
+        &self.text
+    }
 }
 
 impl Display for ProtocolEntry {
