@@ -7,7 +7,7 @@ use std::io;
 // ===== ENTRY TYPE =====
 
 #[derive(PartialEq, Eq)]
-enum EntryType {
+pub enum EntryType {
     Info,
     Decision,
     Task,
@@ -116,27 +116,26 @@ impl ProtocolEntry {
             self.timestamp, self.entry_type, self.said_by, self.text
         )
     }
-    /*
-       /// Timestamp of protocol entry.
-       pub fn timestamp(self) -> &DateTime<Local> {
-           &self.timestamp
-       }
 
-       /// Entry type of protocol entry.
-       pub fn entry_type(self) -> &EntryType {
-           &self.entry_type
-       }
+    /// Timestamp of protocol entry.
+    pub fn timestamp(&self) -> &DateTime<Local> {
+        &self.timestamp
+    }
 
-       /// Protocol entry was said by.
-       pub fn said_by(self) -> &str {
-           &self.said_by
-       }
+    /// Entry type of protocol entry.
+    pub fn entry_type(&self) -> &EntryType {
+        &self.entry_type
+    }
 
-       /// Text of protocol entry.
-       pub fn text(self) -> &str {
-           &self.text
-       }
-    */
+    /// Protocol entry was said by.
+    pub fn said_by(&self) -> &str {
+        &self.said_by
+    }
+
+    /// Text of protocol entry.
+    pub fn text(&self) -> &str {
+        &self.text
+    }
 }
 
 impl Display for ProtocolEntry {
