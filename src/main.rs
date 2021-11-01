@@ -8,8 +8,12 @@ fn main() {
         .author("Sebastian Z. <corka149@mailbox.org>")
         .about("A minimalistic typer for protocols")
         .long_about(
-            "A Fast and minimalistic protocol generator built powered by clap & Rust.
-                It can output the protocol in different formats.",
+            "
+A Fast and minimalistic protocol generator built powered by 
+clap & Rust. It can output the protocol in different formats.
+
+<https://github.com/corka149/protocoler>
+",
         )
         .get_matches();
 
