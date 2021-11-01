@@ -163,7 +163,10 @@ pub fn start() -> Vec<Option<ProtocolEntry>> {
 
         match selection {
             Selection::Type(entry_type) => match ProtocolEntry::from_input(entry_type) {
-                Ok(entry) => entries.push(Some(entry)),
+                Ok(entry) => {
+                    entries.push(Some(entry));
+                    println!("ID: {}", entries.len())
+                }
                 Err(e) => println!("{}", e),
             },
             Selection::Edit(index) => entries = edit_entry(entries, index),
