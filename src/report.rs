@@ -13,7 +13,7 @@ pub fn output(protocol_entries: Vec<ProtocolEntry>) {
     match select_format().as_str() {
         RAW_FORMAT => print_raw(protocol_entries),
         MARKDOWN_FORMAT => todo!(),
-        CSV_FORMAT => todo!(),
+        CSV_FORMAT => print_csv(protocol_entries),
         unknown => {
             eprintln!("Unknown format'{}'", unknown);
             exit(1)
@@ -39,5 +39,12 @@ fn select_format() -> String {
 fn print_raw(protocol_entries: Vec<ProtocolEntry>) {
     for e in protocol_entries {
         println!("{}", e);
+    }
+}
+
+fn print_csv(protocol_entries: Vec<ProtocolEntry>) {
+    println!("{}", ProtocolEntry::CSV_HEADER);
+    for e in protocol_entries {
+        println!("{}", e.to_csv());
     }
 }
