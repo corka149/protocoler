@@ -1,4 +1,6 @@
 mod record;
+mod report;
+mod util;
 
 use clap::App;
 
@@ -25,7 +27,5 @@ clap & Rust. It can output the protocol in different formats.
         .map(|e| e.unwrap())
         .collect::<Vec<record::ProtocolEntry>>();
 
-    for e in entries {
-        println!("{}", e);
-    }
+    report::output(entries);
 }

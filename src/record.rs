@@ -1,3 +1,5 @@
+//! `record` creates protocols.
+use super::util::*;
 use chrono::prelude::*;
 use std::fmt::{Display, Formatter};
 use std::io;
@@ -142,17 +144,6 @@ pub fn start() -> Vec<Option<ProtocolEntry>> {
     }
 
     entries
-}
-
-/// Asks for an user for input.
-fn input(prompt: &str) -> Result<String, io::Error> {
-    let mut buffer = String::new();
-    let stdin = io::stdin();
-
-    println!("{}", prompt);
-    stdin.read_line(&mut buffer)?;
-
-    Ok(buffer.trim().to_string())
 }
 
 /// Removes an entry by setting in None to keep the index stable.
