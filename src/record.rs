@@ -1,5 +1,8 @@
+use chrono::prelude::*;
 use std::fmt::{Display, Formatter};
 use std::io;
+
+// ===== ENTRY TYPE =====
 
 #[derive(PartialEq, Eq)]
 enum EntryType {
@@ -17,6 +20,8 @@ impl Display for EntryType {
         }
     }
 }
+
+// ===== SELECTION =====
 
 #[derive(PartialEq, Eq)]
 enum Selection {
@@ -43,17 +48,20 @@ impl Selection {
     }
 }
 
+// ===== PROTOCOL ENTRY =====
+
 pub struct ProtocolEntry {
     entry_type: EntryType,
     said_by: String,
     text: String,
-    timestamp: u64,
+    timestamp: DateTime<Local>,
 }
 
 impl ProtocolEntry {
     /// Creates a new protocol entry.
     fn new(entry_type: EntryType, said_by: String, text: String) -> ProtocolEntry {
-        let timestamp = 1;
+        let timestamp = Local::now();
+
         ProtocolEntry {
             entry_type,
             said_by,
@@ -100,13 +108,17 @@ impl ProtocolEntry {
 
 impl Display for ProtocolEntry {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let timestamp = self.timestamp.format("%Y-%m-%d %H:%M:%S").to_string();
+
         write!(
             f,
             "{} {} - {}: {}",
-            self.timestamp, self.entry_type, self.said_by, self.text
+            timestamp, self.entry_type, self.said_by, self.text
         )
     }
 }
+
+// ===== RECORD =====
 
 const USAGE: &str = "Enter: (i) add Info, (d) add Decision, (t) add Task, (r) Remove entry, (entryId) edit entry OR (q) for Quit: ";
 
