@@ -67,11 +67,7 @@ impl ProtocolEntry {
         let said_by = input("---Said by:")?;
         let text = input("---Note:")?;
 
-        Ok(ProtocolEntry::new(
-            entry_type,
-            said_by.trim().to_string(),
-            text.trim().to_string(),
-        ))
+        Ok(ProtocolEntry::new(entry_type, said_by, text))
     }
 
     /// Updates a protocol entry from stdin.
@@ -82,7 +78,7 @@ impl ProtocolEntry {
             Ok(sb) => {
                 // if empty - keep said_by
                 if !sb.trim().is_empty() {
-                    self.said_by = sb.trim().to_string();
+                    self.said_by = sb;
                 }
             }
             Err(err) => println!("{}", err),
@@ -94,7 +90,7 @@ impl ProtocolEntry {
             Ok(new_note) => {
                 // If empty - keep note
                 if !new_note.trim().is_empty() {
-                    self.text = new_note.trim().to_string();
+                    self.text = new_note;
                 }
             }
             Err(err) => println!("{}", err),
@@ -144,7 +140,7 @@ fn input(prompt: &str) -> Result<String, io::Error> {
     println!("{}", prompt);
     stdin.read_line(&mut buffer)?;
 
-    Ok(buffer)
+    Ok(buffer.trim().to_string())
 }
 
 /// Removes an entry by setting in None to keep the index stable.
