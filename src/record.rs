@@ -1,8 +1,10 @@
 //! `record` creates protocols.
-use super::util::*;
 use chrono::prelude::*;
 use std::fmt::{Display, Formatter};
 use std::io;
+
+/// A function that ask for input.
+pub type InputFn = fn(&str) -> Result<String, io::Error>;
 
 // ===== ENTRY TYPE =====
 
@@ -75,7 +77,7 @@ impl ProtocolEntry {
     }
 
     /// Creates a new protocol entry from stdin.
-    fn from_input(entry_type: EntryType) -> io::Result<ProtocolEntry> {
+    fn from_input(entry_type: EntryType, input: InputFn) -> io::Result<ProtocolEntry> {
         let said_by = input("---Said by:")?;
         let text = input("---Note:")?;
 
@@ -83,7 +85,7 @@ impl ProtocolEntry {
     }
 
     /// Updates a protocol entry from stdin.
-    fn change_by_input(&mut self) {
+    fn change_by_input(&mut self, input: InputFn) {
         let prompt = format!("---Said by ['{}']:", self.said_by);
 
         match input(&prompt) {
@@ -155,22 +157,22 @@ impl Display for ProtocolEntry {
 const USAGE: &str = "Enter: (i) add Info, (d) add Decision, (t) add Task, (r) Remove entry, (entryId) edit entry OR (q) for Quit: ";
 
 /// Start recording.
-pub fn start() -> Vec<Option<ProtocolEntry>> {
+pub fn start(input: InputFn) -> Vec<Option<ProtocolEntry>> {
     let mut entries: Vec<Option<ProtocolEntry>> = Vec::new();
 
     while let Ok(selection_str) = input(USAGE) {
         let selection = Selection::from_string(&selection_str);
 
         match selection {
-            Selection::Type(entry_type) => match ProtocolEntry::from_input(entry_type) {
+            Selection::Type(entry_type) => match ProtocolEntry::from_input(entry_type, input) {
                 Ok(entry) => {
                     entries.push(Some(entry));
                     println!("ID: {}", entries.len())
                 }
                 Err(e) => println!("{}", e),
             },
-            Selection::Edit(index) => entries = edit_entry(entries, index),
-            Selection::Remove => entries = remove_entry(entries),
+            Selection::Edit(index) => entries = edit_entry(entries, index, input),
+            Selection::Remove => entries = remove_entry(entries, input),
             Selection::Quit => break,
             Selection::Invalid => println!("I do not understand '{}'", selection_str),
         }
@@ -180,7 +182,10 @@ pub fn start() -> Vec<Option<ProtocolEntry>> {
 }
 
 /// Removes an entry by setting in None to keep the index stable.
-fn remove_entry(mut entries: Vec<Option<ProtocolEntry>>) -> Vec<Option<ProtocolEntry>> {
+fn remove_entry(
+    mut entries: Vec<Option<ProtocolEntry>>,
+    input: InputFn,
+) -> Vec<Option<ProtocolEntry>> {
     let index = input("---Delete an entry by ID:");
 
     if let Err(err) = index {
@@ -204,7 +209,11 @@ fn remove_entry(mut entries: Vec<Option<ProtocolEntry>>) -> Vec<Option<ProtocolE
     entries
 }
 
-fn edit_entry(mut entries: Vec<Option<ProtocolEntry>>, index: usize) -> Vec<Option<ProtocolEntry>> {
+fn edit_entry(
+    mut entries: Vec<Option<ProtocolEntry>>,
+    index: usize,
+    input: InputFn,
+) -> Vec<Option<ProtocolEntry>> {
     if index >= entries.len() {
         return entries;
     }
@@ -212,7 +221,7 @@ fn edit_entry(mut entries: Vec<Option<ProtocolEntry>>, index: usize) -> Vec<Opti
     let entry = &mut entries[index];
 
     match entry {
-        Some(e) => e.change_by_input(),
+        Some(e) => e.change_by_input(input),
         None => {
             println!("Entry was already deleted");
             return entries;

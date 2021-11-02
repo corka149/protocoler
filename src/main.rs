@@ -19,7 +19,7 @@ clap & Rust. It can output the protocol in different formats.
         )
         .get_matches();
 
-    let entries = record::start();
+    let entries = record::start(util::input);
 
     let entries = entries
         .into_iter()
