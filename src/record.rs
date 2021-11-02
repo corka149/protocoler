@@ -230,3 +230,51 @@ fn edit_entry(
 
     entries
 }
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_remove_entry_with_success() {
+        let input: InputFn = |_label| -> Result<String, io::Error> { Ok(String::from("1")) };
+        let mut entries: Vec<Option<ProtocolEntry>> = Vec::new();
+
+        entries.push(Some(ProtocolEntry::new(
+            EntryType::Info,
+            "Bob".to_string(),
+            "a text".to_string(),
+        )));
+
+        assert!(entries[0].is_some(), "At 0 there should be something.");
+
+        entries = remove_entry(entries, input);
+
+        assert!(
+            entries[0].is_none(),
+            "At 0 there should be nothing after deleting it."
+        );
+    }
+
+    #[test]
+    fn test_remove_entry_with_failure() {
+        let input: InputFn = |_label| -> Result<String, io::Error> { Ok(String::from("2")) };
+        let mut entries: Vec<Option<ProtocolEntry>> = Vec::new();
+
+        entries.push(Some(ProtocolEntry::new(
+            EntryType::Info,
+            "Bob".to_string(),
+            "a text".to_string(),
+        )));
+
+        assert!(entries[0].is_some(), "At 0 there should be something.");
+
+        entries = remove_entry(entries, input);
+
+        assert!(
+            entries[0].is_some(),
+            "At 0 there should be still the entry because 'ID 2' was provided."
+        );
+    }
+}
