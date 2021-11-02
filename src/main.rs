@@ -23,8 +23,7 @@ clap & Rust. It can output the protocol in different formats.
 
     let entries = entries
         .into_iter()
-        .filter(|e| e.is_some())
-        .map(|e| e.unwrap())
+        .flatten()
         .collect::<Vec<record::ProtocolEntry>>();
 
     report::output(entries);

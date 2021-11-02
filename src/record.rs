@@ -110,7 +110,7 @@ impl ProtocolEntry {
     }
 
     /// Creates a CSV row of the protocol entry.
-    pub fn to_csv(self) -> String {
+    pub fn as_csv(&self) -> String {
         format!(
             "'{}','{}','{}','{}'",
             self.timestamp, self.entry_type, self.said_by, self.text

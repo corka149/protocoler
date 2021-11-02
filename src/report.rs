@@ -94,6 +94,6 @@ fn print_markdown(protocol_entries: Vec<ProtocolEntry>) {
 fn print_csv(protocol_entries: Vec<ProtocolEntry>) {
     println!("{}", ProtocolEntry::CSV_HEADER);
     for e in protocol_entries {
-        println!("{}", e.to_csv());
+        println!("{}", e.as_csv());
     }
 }
