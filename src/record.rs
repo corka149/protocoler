@@ -195,12 +195,12 @@ fn remove_entry(
 
     let index = index.unwrap();
 
-    if let Ok(possible_index) = index.parse::<usize>() {
-        let possible_index = possible_index - 1;
+    if let Ok(possible_id) = index.parse::<usize>() {
+        let possible_id = possible_id - 1;
 
-        match entries.get(possible_index) {
-            Some(_) => entries[possible_index] = None,
-            None => println!("'{}' no entry for removal", possible_index),
+        match entries.get(possible_id) {
+            Some(_) => entries[possible_id] = None,
+            None => println!("'{}' no entry for removal", possible_id),
         }
     } else {
         println!("'{}' could not be recognized as an possible index", index);
@@ -211,14 +211,14 @@ fn remove_entry(
 
 fn edit_entry(
     mut entries: Vec<Option<ProtocolEntry>>,
-    index: usize,
+    id: usize,
     input: InputFn,
 ) -> Vec<Option<ProtocolEntry>> {
-    if index >= entries.len() {
+    if id >= entries.len() {
         return entries;
     }
 
-    let entry = &mut entries[index];
+    let entry = &mut entries[id];
 
     match entry {
         Some(e) => e.change_by_input(input),
@@ -276,5 +276,55 @@ mod tests {
             entries[0].is_some(),
             "At 0 there should be still the entry because 'ID 2' was provided."
         );
+    }
+
+    #[test]
+    fn test_edit_entry_with_success() {
+        let input: InputFn = |label| -> Result<String, io::Error> {
+            match label {
+                "---Said by ['Bob']:" => Ok("Alice".to_string()),
+                "---Note ['No no no']:" => Ok("Yes yes yes".to_string()),
+                _ => panic!("Unknown label"),
+            }
+        };
+
+        let mut entries: Vec<Option<ProtocolEntry>> = Vec::new();
+
+        entries.push(Some(ProtocolEntry::new(
+            EntryType::Info,
+            "Bob".to_string(),
+            "No no no".to_string(),
+        )));
+
+        assert_eq!(entries[0].as_ref().unwrap().said_by(), "Bob");
+        assert_eq!(entries[0].as_ref().unwrap().text(), "No no no");
+
+        entries = edit_entry(entries, 0, input);
+
+        assert_eq!(entries[0].as_ref().unwrap().said_by(), "Alice");
+        assert_eq!(entries[0].as_ref().unwrap().text(), "Yes yes yes");
+    }
+
+    #[test]
+    fn test_edit_entry_with_no_change_because_wrong_index() {
+        let input: InputFn = |_label| -> Result<String, io::Error> {
+            panic!("Should never be called");
+        };
+
+        let mut entries: Vec<Option<ProtocolEntry>> = Vec::new();
+
+        entries.push(Some(ProtocolEntry::new(
+            EntryType::Info,
+            "Bob".to_string(),
+            "No no no".to_string(),
+        )));
+
+        assert_eq!(entries[0].as_ref().unwrap().said_by(), "Bob");
+        assert_eq!(entries[0].as_ref().unwrap().text(), "No no no");
+
+        entries = edit_entry(entries, 1, input);
+
+        assert_eq!(entries[0].as_ref().unwrap().said_by(), "Bob");
+        assert_eq!(entries[0].as_ref().unwrap().text(), "No no no");
     }
 }
