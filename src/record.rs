@@ -237,6 +237,34 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_format_entry_type() {
+        assert_eq!("INFO".to_string(), format!("{}", EntryType::Info));
+        assert_eq!("DECISION".to_string(), format!("{}", EntryType::Decision));
+        assert_eq!("TASK".to_string(), format!("{}", EntryType::Task));
+    }
+
+    #[test]
+    fn test_selection_from_string() {
+        assert!(Selection::Quit == Selection::from_string("q"));
+        assert!(Selection::Invalid == Selection::from_string("foo"));
+        assert!(Selection::Remove == Selection::from_string("r"));
+        assert!(Selection::Edit(1) == Selection::from_string("1"));
+        assert!(Selection::Type(EntryType::Info) == Selection::from_string("i"));
+        assert!(Selection::Type(EntryType::Decision) == Selection::from_string("d"));
+        assert!(Selection::Type(EntryType::Task) == Selection::from_string("t"));
+    }
+
+    #[test]
+    fn test_protocol_entry_as_csv() {
+        let entry = ProtocolEntry::new(EntryType::Info, "Alice".to_string(), "Yes".to_string());
+
+        let csv_row = entry.as_csv();
+
+        assert_eq!(csv_row.split(",").collect::<Vec<&str>>().len(), 4);
+        assert!(csv_row.ends_with("'INFO','Alice','Yes'"));
+    }
+
+    #[test]
     fn test_remove_entry_with_success() {
         let input: InputFn = |_label| -> Result<String, io::Error> { Ok(String::from("1")) };
         let mut entries: Vec<Option<ProtocolEntry>> = Vec::new();
