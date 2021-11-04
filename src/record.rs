@@ -264,7 +264,7 @@ mod tests {
 
     #[test]
     fn test_remove_entry_with_success() {
-        let input: InputFn = |_label| -> Result<String, io::Error> { Ok(String::from("1")) };
+        let input: InputFn = |_label| -> Result<String, io::Error> { Ok(String::from("0")) };
         let mut entries: Vec<Option<ProtocolEntry>> = Vec::new();
 
         entries.push(Some(ProtocolEntry::new(
