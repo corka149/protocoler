@@ -167,7 +167,7 @@ pub fn start(input: InputFn) -> Vec<Option<ProtocolEntry>> {
             Selection::Type(entry_type) => match ProtocolEntry::from_input(entry_type, input) {
                 Ok(entry) => {
                     entries.push(Some(entry));
-                    println!("ID: {}", entries.len())
+                    println!("ID: {}", entries.len() - 1)
                 }
                 Err(e) => println!("{}", e),
             },
@@ -196,8 +196,6 @@ fn remove_entry(
     let index = index.unwrap();
 
     if let Ok(possible_id) = index.parse::<usize>() {
-        let possible_id = possible_id - 1;
-
         match entries.get(possible_id) {
             Some(_) => entries[possible_id] = None,
             None => println!("'{}' no entry for removal", possible_id),
