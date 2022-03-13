@@ -3,6 +3,7 @@ mod report;
 mod util;
 
 use clap::App;
+use std::io;
 
 fn main() {
     let _matches = App::new("Protocoler")
@@ -19,6 +20,8 @@ clap & Rust. It can output the protocol in different formats.
         )
         .get_matches();
 
+    let participants = record_participants();
+
     let entries = record::start(util::input);
 
     let entries = entries
@@ -26,5 +29,34 @@ clap & Rust. It can output the protocol in different formats.
         .flatten()
         .collect::<Vec<record::ProtocolEntry>>();
 
-    report::output(entries);
+    report::output(participants, entries);
+}
+
+fn record_participants() -> Vec<String> {
+    loop {
+        let participants: Result<Vec<String>, io::Error> =
+            util::input("Participants of meeting? (Separate by comma)").map(|all_participants| {
+                all_participants
+                    .split(",")
+                    .map(|p| p.trim().to_string())
+                    .filter(|p| !p.is_empty())
+                    .collect::<Vec<String>>()
+            });
+
+        if participants.is_ok() {
+            let participants = participants.unwrap();
+
+            println!("{}", participants.len());
+            if !participants.is_empty() {
+                return participants;
+            } else {
+                eprintln!("No participants provided!")
+            }
+        } else {
+            eprintln!(
+                "Error while reading participants: {}",
+                participants.unwrap_err()
+            )
+        }
+    }
 }

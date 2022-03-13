@@ -10,10 +10,10 @@ const CSV_FORMAT: &str = "csv";
 const ALLOWED_FORMATS: [&str; 3] = [RAW_FORMAT, MARKDOWN_FORMAT, CSV_FORMAT];
 
 /// Outputs the protocol entries in different formats.
-pub fn output(protocol_entries: Vec<ProtocolEntry>) {
+pub fn output(participants: Vec<String>, protocol_entries: Vec<ProtocolEntry>) {
     match select_format().as_str() {
-        RAW_FORMAT => print_raw(protocol_entries),
-        MARKDOWN_FORMAT => print_markdown(protocol_entries),
+        RAW_FORMAT => print_raw(participants, protocol_entries),
+        MARKDOWN_FORMAT => print_markdown(participants, protocol_entries),
         CSV_FORMAT => print_csv(protocol_entries),
         unknown => {
             eprintln!("Unknown format'{}'", unknown);
@@ -37,13 +37,15 @@ fn select_format() -> String {
     }
 }
 
-fn print_raw(protocol_entries: Vec<ProtocolEntry>) {
+fn print_raw(participants: Vec<String>, protocol_entries: Vec<ProtocolEntry>) {
+    println!("Participants: {:?}", participants);
+
     for e in protocol_entries {
         println!("{}", e);
     }
 }
 
-fn print_markdown(protocol_entries: Vec<ProtocolEntry>) {
+fn print_markdown(participants: Vec<String>, protocol_entries: Vec<ProtocolEntry>) {
     let mut infos: Vec<ProtocolEntry> = Vec::new();
     let mut decisions: Vec<ProtocolEntry> = Vec::new();
     let mut tasks: Vec<ProtocolEntry> = Vec::new();
@@ -57,6 +59,11 @@ fn print_markdown(protocol_entries: Vec<ProtocolEntry>) {
     }
 
     println!("# Protocol {}", Local::now().format("%Y-%m-%d"));
+
+    println!("\n## Participants\n");
+    participants
+        .iter()
+        .for_each(|participant| println!("* {}", participant));
 
     println!("\n## Information\n");
     println!("|Time|Said by|text|");
