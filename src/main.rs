@@ -1,62 +1,36 @@
-mod record;
-mod report;
-mod util;
-
-use clap::App;
-use std::io;
+use cursive::Cursive;
+use cursive::theme::{BaseColor, BorderStyle, Color, ColorStyle};
+use cursive::traits::*;
+use cursive::views::{Dialog, EditView, LinearLayout, TextView};
 
 fn main() {
-    let _matches = App::new("Protocoler")
-        .version("1.0.0")
-        .author("Sebastian Z. <corka149@mailbox.org>")
-        .about("A minimalistic typer for protocols")
-        .long_about(
-            "
-A Fast and minimalistic protocol generator built powered by 
-clap & Rust. It can output the protocol in different formats.
+    let mut siv = cursive::default();
 
-<https://github.com/corka149/protocoler>
-",
-        )
-        .get_matches();
+    let layout = LinearLayout::vertical()
+        .child(TextView::new("This is a dynamic theme example!"))
+        .child(EditView::new().content("Woo! colors!"));
 
-    let participants = record_participants();
+    siv.add_fullscreen_layer(
+        Dialog::around(layout)
+            .button("Quit", Cursive::quit)
+            .full_screen(),
+    );
 
-    let entries = record::start(util::input);
+    siv.add_global_callback('q', |s| s.quit());
 
-    let entries = entries
-        .into_iter()
-        .flatten()
-        .collect::<Vec<record::ProtocolEntry>>();
+    siv.update_theme(|theme| {
+        theme.shadow = false;
+        theme.borders = BorderStyle::Simple;
 
-    report::output(participants, entries);
-}
+        theme.palette.set_color("Background", Color::TerminalDefault);
+        theme.palette.set_color("Shadow", Color::TerminalDefault);
+        theme.palette.set_color("View", Color::TerminalDefault);
+        theme.palette.set_color("Primary", Color::TerminalDefault);
+        theme.palette.set_color("Secondary", Color::TerminalDefault);
+        theme.palette.set_color("Tertiary", Color::TerminalDefault);
+        theme.palette.set_color("TitlePrimary", Color::TerminalDefault);
+        theme.palette.set_color("TitleSecondary", Color::TerminalDefault);
+    });
 
-fn record_participants() -> Vec<String> {
-    loop {
-        let participants: Result<Vec<String>, io::Error> =
-            util::input("Participants of meeting? (Separate by comma)").map(|all_participants| {
-                all_participants
-                    .split(",")
-                    .map(|p| p.trim().to_string())
-                    .filter(|p| !p.is_empty())
-                    .collect::<Vec<String>>()
-            });
-
-        if participants.is_ok() {
-            let participants = participants.unwrap();
-
-            println!("{}", participants.len());
-            if !participants.is_empty() {
-                return participants;
-            } else {
-                eprintln!("No participants provided!")
-            }
-        } else {
-            eprintln!(
-                "Error while reading participants: {}",
-                participants.unwrap_err()
-            )
-        }
-    }
+    siv.run();
 }
