@@ -148,6 +148,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "cursive_table_view"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f8935dd87d19c54b7506b245bc988a7b4e65b1058e1d0d64c0ad9b3188e48060"
+dependencies = [
+ "cursive_core",
+]
+
+[[package]]
 name = "darling"
 version = "0.13.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -407,6 +416,7 @@ dependencies = [
  "chrono",
  "clap",
  "cursive",
+ "cursive_table_view",
 ]
 
 [[package]]
