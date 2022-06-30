@@ -2,25 +2,27 @@ extern crate chrono;
 extern crate cursive;
 extern crate cursive_table_view;
 
-use cursive::traits::*;
-use cursive::views::{Dialog, ListView, TextView};
-use cursive_table_view::TableView;
-
 mod style;
 mod table;
+
+use cursive::traits::*;
+use cursive::views::Dialog;
+
+use crate::table::{EntryType, ProtocolEntry};
+
 
 /// MAIN
 fn main() {
     let mut siv = cursive::default();
 
-    let mut table = TableView::<table::EntryType, table::BasicColumn>::new();
+    let mut table = table::new();
 
-
-    let select_view = ListView::new()
-        .child("Label", TextView::new("TextView"));
+    table.insert_item(ProtocolEntry::new(
+        EntryType::Info, "Alice".to_string(), "Let`s go".to_string()
+    ));
 
     siv.add_fullscreen_layer(
-        Dialog::around(select_view)
+        Dialog::around(table)
             .title("Protocoler")
             .full_screen(),
     );

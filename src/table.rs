@@ -2,7 +2,8 @@ use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
 
 use chrono::prelude::*;
-use cursive_table_view::TableViewItem;
+use cursive::traits::*;
+use cursive_table_view::{TableView, TableViewItem};
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub enum BasicColumn {
@@ -48,6 +49,20 @@ pub struct ProtocolEntry {
     message: String,
 }
 
+impl ProtocolEntry {
+    /// Creates a new protocol entry.
+    pub fn new(entry_type: EntryType, owner: String, message: String) -> ProtocolEntry {
+        let timestamp = Local::now();
+
+        ProtocolEntry {
+            timestamp,
+            entry_type,
+            owner,
+            message,
+        }
+    }
+}
+
 impl TableViewItem<BasicColumn> for ProtocolEntry {
     fn to_column(&self, column: BasicColumn) -> String {
         match column {
@@ -69,4 +84,14 @@ impl TableViewItem<BasicColumn> for ProtocolEntry {
             BasicColumn::Message => self.message.cmp(&other.message),
         }
     }
+}
+
+// ===== ===== module ===== =====
+
+pub fn new() -> TableView::<ProtocolEntry, BasicColumn> {
+    TableView::<ProtocolEntry, BasicColumn>::new()
+        .column(BasicColumn::Timestamp, "Timestamp", |c| c.width_percent(18))
+        .column(BasicColumn::Owner, "Owner", |c| c.width_percent(18))
+        .column(BasicColumn::Type, "Type", |c| c.width_percent(8))
+        .column(BasicColumn::Message, "Message", |c| c.width_percent(56))
 }
