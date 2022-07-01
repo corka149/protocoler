@@ -2,7 +2,6 @@ use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
 
 use chrono::prelude::*;
-use cursive::traits::*;
 use cursive_table_view::{TableView, TableViewItem};
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
@@ -11,17 +10,6 @@ pub enum BasicColumn {
     Type,
     Owner,
     Message,
-}
-
-impl BasicColumn {
-    fn as_str(&self) -> &str {
-        match *self {
-            BasicColumn::Timestamp => "Timestamp",
-            BasicColumn::Type => "Type",
-            BasicColumn::Owner => "Owner",
-            BasicColumn::Message => "Message",
-        }
-    }
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Debug)]
@@ -88,7 +76,7 @@ impl TableViewItem<BasicColumn> for ProtocolEntry {
 
 // ===== ===== module ===== =====
 
-pub fn new() -> TableView::<ProtocolEntry, BasicColumn> {
+pub fn new() -> TableView<ProtocolEntry, BasicColumn> {
     TableView::<ProtocolEntry, BasicColumn>::new()
         .column(BasicColumn::Timestamp, "Timestamp", |c| c.width_percent(18))
         .column(BasicColumn::Owner, "Owner", |c| c.width_percent(18))

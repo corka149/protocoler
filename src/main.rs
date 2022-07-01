@@ -4,6 +4,7 @@ extern crate cursive_table_view;
 
 mod style;
 mod table;
+mod help;
 
 use cursive::traits::*;
 use cursive::views::Dialog;
@@ -22,12 +23,13 @@ fn main() {
     ));
 
     siv.add_fullscreen_layer(
-        Dialog::around(table)
+        Dialog::around(table.with_name("main_table"))
             .title("Protocoler")
             .full_screen(),
     );
 
     siv.add_global_callback('q', |s| s.quit());
+    siv.add_global_callback('x', |s| s.add_layer(help::new()));
 
     siv.update_theme(style::set_terminal_default);
 
