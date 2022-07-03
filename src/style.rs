@@ -1,7 +1,9 @@
+//! Everything around appearance.
+
 use cursive::theme::{BorderStyle, Color, Theme};
 
 /// Sets most color keys to terminal default.
-pub fn set_terminal_default(theme: &mut Theme) {
+pub fn set_default_style(theme: &mut Theme) {
     theme.shadow = false;
     theme.borders = BorderStyle::Simple;
 

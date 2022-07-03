@@ -1,3 +1,5 @@
+//! Main manu for protocol entries.
+
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
 
@@ -76,6 +78,7 @@ impl TableViewItem<BasicColumn> for ProtocolEntry {
 
 // ===== ===== module ===== =====
 
+/// Creates a new table for protocol entries.
 pub fn new() -> TableView<ProtocolEntry, BasicColumn> {
     TableView::<ProtocolEntry, BasicColumn>::new()
         .column(BasicColumn::Timestamp, "Timestamp", |c| c.width_percent(18))

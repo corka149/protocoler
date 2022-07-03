@@ -34,7 +34,7 @@ fn main() {
     siv.add_global_callback('q', |s| s.quit());
     siv.add_global_callback('x', |s| s.add_layer(help::help_menu()));
 
-    siv.update_theme(style::set_terminal_default);
+    siv.update_theme(style::set_default_style);
 
     siv.run();
 }
