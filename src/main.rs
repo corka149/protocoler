@@ -3,7 +3,7 @@ extern crate cursive;
 extern crate cursive_table_view;
 
 use cursive::traits::*;
-use cursive::views::{Dialog, LinearLayout, Panel, StackView, TextView};
+use cursive::views::{Dialog, LinearLayout};
 use cursive_table_view::TableView;
 
 use crate::table::{BasicColumn, EntryType, ProtocolEntry};
@@ -21,7 +21,7 @@ fn main() {
     dummy_data(&mut table);
 
     let full_view = LinearLayout::vertical()
-        .child(table.full_height().with_name("main_table"))
+        .child(table.full_height().with_name(table::table_name()))
         .child(help::hint_bar())
         .full_screen();
 
@@ -31,8 +31,12 @@ fn main() {
             .full_screen(),
     );
 
+    // General actions
     siv.add_global_callback('q', |s| s.quit());
     siv.add_global_callback('x', |s| s.add_layer(help::help_menu()));
+
+    // Table Actions
+    siv.add_global_callback('d', table::delete_entry);
 
     siv.update_theme(style::set_default_style);
 

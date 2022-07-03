@@ -4,6 +4,7 @@ use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
 
 use chrono::prelude::*;
+use cursive::Cursive;
 use cursive_table_view::{TableView, TableViewItem};
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
@@ -78,6 +79,11 @@ impl TableViewItem<BasicColumn> for ProtocolEntry {
 
 // ===== ===== module ===== =====
 
+/// Global table name.
+pub fn table_name() -> String {
+    "main_table".to_string()
+}
+
 /// Creates a new table for protocol entries.
 pub fn new() -> TableView<ProtocolEntry, BasicColumn> {
     TableView::<ProtocolEntry, BasicColumn>::new()
@@ -85,4 +91,11 @@ pub fn new() -> TableView<ProtocolEntry, BasicColumn> {
         .column(BasicColumn::Owner, "Owner", |c| c.width_percent(18))
         .column(BasicColumn::Type, "Type", |c| c.width_percent(8))
         .column(BasicColumn::Message, "Message", |c| c.width_percent(56))
+}
+
+pub fn delete_entry(siv: &mut Cursive) {
+    let name = table_name();
+    siv.call_on_name(&name, |table: &mut TableView<ProtocolEntry, BasicColumn>| {
+        table.remove_item(1);
+    });
 }
