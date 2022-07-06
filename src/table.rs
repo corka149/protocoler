@@ -95,6 +95,7 @@ pub fn new() -> TableView<ProtocolEntry, BasicColumn> {
         .column(BasicColumn::Message, "Message", |c| c.width_percent(56))
 }
 
+/// Delete an entry.
 pub fn delete_entry(siv: &mut Cursive) {
     let name = table_name();
     siv.call_on_name(&name, |table: &mut TableView<ProtocolEntry, BasicColumn>| {
@@ -102,4 +103,9 @@ pub fn delete_entry(siv: &mut Cursive) {
             table.remove_item(index);
         }
     });
+}
+
+/// Edit or add new entry.
+pub fn data_dialog(siv: &mut Cursive) {
+
 }

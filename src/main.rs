@@ -38,6 +38,8 @@ fn main() {
     siv.add_global_callback('x', |s| s.add_layer(help::help_menu()));
 
     // Table Actions
+    siv.add_global_callback('a', table::data_dialog);
+    siv.add_global_callback('e', table::data_dialog);
     siv.add_global_callback('d', table::delete_entry);
 
     siv.update_theme(style::set_default_style);
