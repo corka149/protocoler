@@ -3,7 +3,7 @@ extern crate cursive;
 extern crate cursive_table_view;
 
 use cursive::traits::*;
-use cursive::views::{Dialog, LinearLayout};
+use cursive::views::{DebugView, Dialog, LinearLayout};
 use cursive_table_view::TableView;
 
 use crate::table::{BasicColumn, EntryType, ProtocolEntry};
@@ -17,12 +17,14 @@ fn main() {
     let mut siv = cursive::default();
 
     let mut table = table::new();
+    let debug_view = DebugView::default();
 
     dummy_data(&mut table);
 
     let full_view = LinearLayout::vertical()
-        .child(table.full_height().with_name(table::table_name()))
+        .child(table.with_name(table::table_name()).full_height())
         .child(help::hint_bar())
+        .child(debug_view)
         .full_screen();
 
     siv.add_fullscreen_layer(

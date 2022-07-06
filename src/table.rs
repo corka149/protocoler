@@ -79,9 +79,11 @@ impl TableViewItem<BasicColumn> for ProtocolEntry {
 
 // ===== ===== module ===== =====
 
+const TABLE_NAME: &str = "main_table";
+
 /// Global table name.
-pub fn table_name() -> String {
-    "main_table".to_string()
+pub fn table_name() -> &'static str {
+    TABLE_NAME
 }
 
 /// Creates a new table for protocol entries.
@@ -96,6 +98,8 @@ pub fn new() -> TableView<ProtocolEntry, BasicColumn> {
 pub fn delete_entry(siv: &mut Cursive) {
     let name = table_name();
     siv.call_on_name(&name, |table: &mut TableView<ProtocolEntry, BasicColumn>| {
-        table.remove_item(1);
+        if let Some(index) = table.row() {
+            table.remove_item(index);
+        }
     });
 }
