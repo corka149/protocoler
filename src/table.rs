@@ -97,15 +97,33 @@ pub fn new() -> TableView<ProtocolEntry, BasicColumn> {
 
 /// Delete an entry.
 pub fn delete_entry(siv: &mut Cursive) {
-    let name = table_name();
-    siv.call_on_name(&name, |table: &mut TableView<ProtocolEntry, BasicColumn>| {
-        if let Some(index) = table.row() {
-            table.remove_item(index);
-        }
-    });
+    siv.call_on_name(table_name(), do_delete);
+}
+
+fn do_delete(table: &mut TableView<ProtocolEntry, BasicColumn>) {
+    if let Some(index) = table.row() {
+        table.remove_item(index);
+    }
 }
 
 /// Edit or add new entry.
-pub fn data_dialog(siv: &mut Cursive) {
+pub fn add_entry(siv: &mut Cursive) {
+    siv.call_on_name(table_name(), do_add);
+}
 
+fn do_add(table: &mut TableView<ProtocolEntry, BasicColumn>) {
+    if let Some(index) = table.row() {
+        // TODO
+    }
+}
+
+/// Edit or add new entry.
+pub fn edit_entry(siv: &mut Cursive) {
+    siv.call_on_name(table_name(), do_edit);
+}
+
+fn do_edit(table: &mut TableView<ProtocolEntry, BasicColumn>) {
+    if let Some(index) = table.row() {
+        // TODO
+    }
 }
