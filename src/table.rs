@@ -5,7 +5,10 @@ use std::fmt::{Display, Formatter};
 
 use chrono::prelude::*;
 use cursive::Cursive;
+use cursive::views::ViewRef;
 use cursive_table_view::{TableView, TableViewItem};
+
+use crate::dialog;
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub enum BasicColumn {
@@ -52,6 +55,10 @@ impl ProtocolEntry {
             message,
         }
     }
+
+    pub fn set_message(&mut self, new_message: String) {
+        self.message = new_message;
+    }
 }
 
 impl TableViewItem<BasicColumn> for ProtocolEntry {
@@ -97,33 +104,31 @@ pub fn new() -> TableView<ProtocolEntry, BasicColumn> {
 
 /// Delete an entry.
 pub fn delete_entry(siv: &mut Cursive) {
-    siv.call_on_name(table_name(), do_delete);
+    siv.call_on_name(table_name(), |table: &mut TableView<ProtocolEntry, BasicColumn>| {
+        if let Some(index) = table.row() {
+            table.remove_item(index);
+        }
+    });
 }
 
-fn do_delete(table: &mut TableView<ProtocolEntry, BasicColumn>) {
-    if let Some(index) = table.row() {
-        table.remove_item(index);
-    }
-}
-
-/// Edit or add new entry.
+/// Edit an entry.
 pub fn add_entry(siv: &mut Cursive) {
-    siv.call_on_name(table_name(), do_add);
+    siv.call_on_name(table_name(), |table: &mut TableView<ProtocolEntry, BasicColumn>| {
+        if let Some(index) = table.row() {}
+    });
 }
 
-fn do_add(table: &mut TableView<ProtocolEntry, BasicColumn>) {
-    if let Some(index) = table.row() {
-        // TODO
-    }
-}
-
-/// Edit or add new entry.
+/// Add a new entry.
 pub fn edit_entry(siv: &mut Cursive) {
-    siv.call_on_name(table_name(), do_edit);
-}
+    let table: Option<ViewRef<TableView<ProtocolEntry, BasicColumn>>> = siv.find_name(table_name());
+    if table.is_none() {
+        return;
+    }
+    let table: ViewRef<TableView<ProtocolEntry, BasicColumn>> = table.unwrap();
 
-fn do_edit(table: &mut TableView<ProtocolEntry, BasicColumn>) {
-    if let Some(index) = table.row() {
-        // TODO
+    if let Some(index) = table.item() {
+        if let Some(entry) = table.borrow_item(index) {
+            siv.add_layer(dialog::edit_dialog(entry.clone(), index));
+        }
     }
 }

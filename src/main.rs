@@ -11,6 +11,7 @@ use crate::table::{BasicColumn, EntryType, ProtocolEntry};
 mod style;
 mod table;
 mod help;
+mod dialog;
 
 /// MAIN
 fn main() {
