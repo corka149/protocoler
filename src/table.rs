@@ -39,8 +39,8 @@ impl Display for EntryType {
 pub struct ProtocolEntry {
     timestamp: DateTime<Local>,
     entry_type: EntryType,
-    owner: String,
-    message: String,
+    pub owner: String,
+    pub message: String,
 }
 
 impl ProtocolEntry {
@@ -54,10 +54,6 @@ impl ProtocolEntry {
             owner,
             message,
         }
-    }
-
-    pub fn set_message(&mut self, new_message: String) {
-        self.message = new_message;
     }
 }
 
@@ -128,7 +124,7 @@ pub fn edit_entry(siv: &mut Cursive) {
 
     if let Some(index) = table.item() {
         if let Some(entry) = table.borrow_item(index) {
-            siv.add_layer(dialog::edit_dialog(entry.clone(), index));
+            siv.add_layer(dialog::edit_dialog(entry));
         }
     }
 }
