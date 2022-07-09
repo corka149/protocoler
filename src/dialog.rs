@@ -6,6 +6,8 @@ use crate::{BasicColumn, EntryType, LinearLayout, ProtocolEntry, table};
 
 const DIALOG_WIDTH: usize = 70;
 
+// ===== ===== ADD DIALOG ===== =====
+
 pub fn add_dialog() -> Dialog {
     let content = add_dialog_content();
 
@@ -50,6 +52,8 @@ fn add_dialog_content() -> LinearLayout {
             ).title("Message").min_width(DIALOG_WIDTH)
         )
 }
+
+// ===== ===== EDIT DIALOG ===== =====
 
 pub fn edit_dialog(entry: &ProtocolEntry) -> Dialog {
     let content = edit_dialog_content(entry);
