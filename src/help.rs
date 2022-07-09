@@ -6,8 +6,7 @@ use cursive::views::{Dialog, LinearLayout, ListView, Panel, TextView};
 /// Creates a help menu.
 pub fn help_menu() -> Dialog {
     let help = ListView::new()
-        .child("a", TextView::new("Add below"))
-        .child("A", TextView::new("Add above"))
+        .child("a", TextView::new("Add new item"))
         .child("d", TextView::new("Delete an item"))
         .child("e", TextView::new("Edit current item"))
         .child("-", TextView::new("------------------"))

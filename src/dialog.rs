@@ -3,13 +3,47 @@ use cursive::traits::*;
 use cursive::views::{Dialog, EditView, Panel, TextArea, TextView, ViewRef};
 use cursive_table_view::TableView;
 
-use crate::{BasicColumn, LinearLayout, ProtocolEntry, table};
+use crate::{BasicColumn, EntryType, LinearLayout, ProtocolEntry, table};
 
 const DIALOG_WIDTH: usize = 70;
 
-pub fn add_dialog(entry: ProtocolEntry) -> Dialog {
-    Dialog::around(TextView::new("Hello Dialog!"))
+pub fn add_dialog() -> Dialog {
+    let content = LinearLayout::vertical()
+        .child(
+            // OWNER
+            Panel::new(
+                EditView::default()
+                    .content("")
+                    .with_name("owner")
+            ).title("Owner").min_width(DIALOG_WIDTH)
+        )
+        .child(
+            // MESSAGE
+            Panel::new(
+                TextArea::default()
+                    .content("")
+                    .with_name("message")
+                    .min_height(10)
+            ).title("Message").min_width(DIALOG_WIDTH)
+        )
+        ;
+
+    Dialog::around(content)
         .title("Add")
+        .button("Save", move |s| {
+            // GET FIELDS
+            let owner = s.find_name::<EditView>("owner").map(|e| e.get_content().to_string()).unwrap_or_default();
+            let message = s.find_name::<TextArea>("message").map(|t| t.get_content().to_string()).unwrap_or_default();
+
+            s.call_on_name(table::table_name(), |table: &mut TableView<ProtocolEntry, BasicColumn>| {
+                // CREATE ITEM
+                let new = ProtocolEntry::new(EntryType::Info, owner, message);
+
+                // ADD ITEM TO TABLE
+                table.insert_item( new);
+            });
+            s.pop_layer();
+        })
         .button("Quit", |s| {
             s.pop_layer();
         })

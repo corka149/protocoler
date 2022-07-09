@@ -124,9 +124,7 @@ pub fn delete_entry(siv: &mut Cursive) {
 
 /// Edit an entry.
 pub fn add_entry(siv: &mut Cursive) {
-    siv.call_on_name(table_name(), |table: &mut TableView<ProtocolEntry, BasicColumn>| {
-        if let Some(index) = table.row() {}
-    });
+    siv.add_layer(dialog::add_dialog());
 }
 
 /// Add a new entry.
