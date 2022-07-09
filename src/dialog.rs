@@ -1,6 +1,5 @@
-use cursive::Cursive;
 use cursive::traits::*;
-use cursive::views::{Dialog, EditView, Panel, TextArea, TextView, ViewRef};
+use cursive::views::{Dialog, EditView, Panel, TextArea};
 use cursive_table_view::TableView;
 
 use crate::{BasicColumn, EntryType, LinearLayout, ProtocolEntry, table};
