@@ -39,12 +39,21 @@ pub fn edit_dialog(entry: &ProtocolEntry) -> Dialog {
     Dialog::around(content)
         .title("Edit")
         .button("Save", move |s| {
+            // GET FIELDS
+            let owner = s.find_name::<EditView>("owner").map(|e| e.get_content().to_string()).unwrap_or_default();
+            let message = s.find_name::<TextArea>("message").map(|t| t.get_content().to_string()).unwrap_or_default();
+
             s.call_on_name(table::table_name(), |table: &mut TableView<ProtocolEntry, BasicColumn>| {
-                // GET ITEM
+                if let Some(old) = table::get_current_item(table) {
+                    // CHANGE ITEM
+                    let new = old.clone().message(message).owner(owner);
 
-                // CHANGE ITEM
-
-                // REPLACE ITEM IN TABLE
+                    // REPLACE ITEM IN TABLE
+                    if let Some(index) = table.item() {
+                        table.remove_item(index);
+                        table.insert_item_at(index, new);
+                    }
+                }
             });
             s.pop_layer();
         })

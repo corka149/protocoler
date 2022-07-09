@@ -37,8 +37,8 @@ impl Display for EntryType {
 
 #[derive(Clone, Debug)]
 pub struct ProtocolEntry {
-    timestamp: DateTime<Local>,
-    entry_type: EntryType,
+    pub timestamp: DateTime<Local>,
+    pub entry_type: EntryType,
     pub owner: String,
     pub message: String,
 }
@@ -54,6 +54,21 @@ impl ProtocolEntry {
             owner,
             message,
         }
+    }
+
+    pub fn entry_type(mut self, entry_type: EntryType) -> Self {
+        self.entry_type = entry_type;
+        self
+    }
+
+    pub fn owner(mut self, owner: String) -> Self {
+        self.owner = owner;
+        self
+    }
+
+    pub fn message(mut self, message: String) -> Self {
+        self.message = message;
+        self
     }
 }
 
@@ -122,9 +137,17 @@ pub fn edit_entry(siv: &mut Cursive) {
     }
     let table: ViewRef<TableView<ProtocolEntry, BasicColumn>> = table.unwrap();
 
+    if let Some(entry) = get_current_item(&table) {
+        siv.add_layer(dialog::edit_dialog(entry));
+    }
+}
+
+pub fn get_current_item(table: &TableView<ProtocolEntry, BasicColumn>) -> Option<&ProtocolEntry> {
     if let Some(index) = table.item() {
         if let Some(entry) = table.borrow_item(index) {
-            siv.add_layer(dialog::edit_dialog(entry));
+            return Some(entry);
         }
     }
+
+    return None;
 }
