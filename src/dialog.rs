@@ -18,7 +18,7 @@ pub fn add_dialog() -> Dialog {
             // GET FIELDS
             let owner = s.find_name::<EditView>("owner").map(|e| e.get_content().to_string()).unwrap_or_default();
             let message = s.find_name::<TextArea>("message").map(|t| t.get_content().to_string()).unwrap_or_default();
-            let entry_type = s.find_name::<SelectView<EntryType>>("entry_type").map(get_selected_type).unwrap_or_default();
+            let entry_type = s.find_name::<SelectView<EntryType>>("type_select").map(get_selected_type).unwrap_or_default();
 
             s.call_on_name(table::table_name(), |table: &mut TableView<ProtocolEntry, BasicColumn>| {
                 add_entry(table, entry_type, owner, message);
@@ -69,7 +69,7 @@ pub fn edit_dialog(entry: &ProtocolEntry) -> Dialog {
             // GET FIELDS
             let owner = s.find_name::<EditView>("owner").map(|e| e.get_content().to_string()).unwrap_or_default();
             let message = s.find_name::<TextArea>("message").map(|t| t.get_content().to_string()).unwrap_or_default();
-            let entry_type = s.find_name::<SelectView<EntryType>>("entry_type").map(get_selected_type).unwrap_or_default();
+            let entry_type = s.find_name::<SelectView<EntryType>>("type_select").map(get_selected_type).unwrap_or_default();
 
             s.call_on_name(table::table_name(), |t: &mut TableView<ProtocolEntry, BasicColumn>| {
                 edit_entry(t, entry_type, owner, message);
