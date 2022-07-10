@@ -35,6 +35,12 @@ impl Display for EntryType {
     }
 }
 
+impl Default for EntryType {
+    fn default() -> Self {
+        EntryType::Info
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct ProtocolEntry {
     pub timestamp: DateTime<Local>,
