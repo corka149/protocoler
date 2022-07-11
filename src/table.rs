@@ -4,8 +4,8 @@ use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
 
 use chrono::prelude::*;
-use cursive::traits::*;
 use cursive::Cursive;
+use cursive::traits::*;
 use cursive::views::ViewRef;
 use cursive_table_view::{TableView, TableViewItem};
 
@@ -51,6 +51,8 @@ pub struct ProtocolEntry {
 }
 
 impl ProtocolEntry {
+    pub const CSV_HEADER: &'static str = "timestamp,entry_type,owner,message";
+
     /// Creates a new protocol entry.
     pub fn new(entry_type: EntryType, owner: String, message: String) -> ProtocolEntry {
         let timestamp = Local::now();
@@ -76,6 +78,26 @@ impl ProtocolEntry {
     pub fn message(mut self, message: String) -> Self {
         self.message = message;
         self
+    }
+
+    /// Creates a CSV row of the protocol entry.
+    pub fn as_csv(&self) -> String {
+        format!(
+            "'{}','{}','{}','{}'",
+            self.timestamp, self.entry_type, self.owner, self.message
+        )
+    }
+}
+
+impl Display for ProtocolEntry {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let timestamp = self.timestamp.format("%Y-%m-%d %H:%M:%S").to_string();
+
+        write!(
+            f,
+            "{} {} - {}: {}",
+            timestamp, self.entry_type, self.owner, self.message
+        )
     }
 }
 

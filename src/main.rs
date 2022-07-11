@@ -14,6 +14,7 @@ mod style;
 mod table;
 mod help;
 mod dialog;
+mod report;
 
 const DIALOG_NAME: &'static str = "app_dialog";
 
