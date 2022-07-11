@@ -11,6 +11,8 @@ use cursive_table_view::{TableView, TableViewItem};
 
 use crate::dialog;
 
+pub type ProtocolTable = TableView<ProtocolEntry, BasicColumn>;
+
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub enum BasicColumn {
     Timestamp,
@@ -134,8 +136,8 @@ pub fn table_name() -> &'static str {
 }
 
 /// Creates a new table for protocol entries.
-pub fn new() -> TableView<ProtocolEntry, BasicColumn> {
-    TableView::<ProtocolEntry, BasicColumn>::new()
+pub fn new() -> ProtocolTable {
+    ProtocolTable::new()
         .column(BasicColumn::Timestamp, "Timestamp", |c| c.width_percent(18))
         .column(BasicColumn::Owner, "Owner", |c| c.width_percent(18))
         .column(BasicColumn::Type, "Type", |c| c.width_percent(8))
@@ -144,7 +146,7 @@ pub fn new() -> TableView<ProtocolEntry, BasicColumn> {
 
 /// Delete an entry.
 pub fn delete_entry(siv: &mut Cursive) {
-    siv.call_on_name(table_name(), |table: &mut TableView<ProtocolEntry, BasicColumn>| {
+    siv.call_on_name(table_name(), |table: &mut ProtocolTable| {
         if let Some(index) = table.row() {
             table.remove_item(index);
         }
@@ -158,18 +160,18 @@ pub fn add_entry(siv: &mut Cursive, name: &str) {
 
 /// Add a new entry.
 pub fn edit_entry(siv: &mut Cursive, name: &str) {
-    let table: Option<ViewRef<TableView<ProtocolEntry, BasicColumn>>> = siv.find_name(table_name());
+    let table: Option<ViewRef<ProtocolTable>> = siv.find_name(table_name());
     if table.is_none() {
         return;
     }
-    let table: ViewRef<TableView<ProtocolEntry, BasicColumn>> = table.unwrap();
+    let table: ViewRef<ProtocolTable> = table.unwrap();
 
     if let Some(entry) = get_current_item(&table) {
         siv.add_layer(dialog::edit_dialog(entry).with_name(name));
     }
 }
 
-pub fn get_current_item(table: &TableView<ProtocolEntry, BasicColumn>) -> Option<&ProtocolEntry> {
+pub fn get_current_item(table: &ProtocolTable) -> Option<&ProtocolEntry> {
     if let Some(index) = table.item() {
         if let Some(entry) = table.borrow_item(index) {
             return Some(entry);

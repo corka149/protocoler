@@ -2,13 +2,17 @@ extern crate chrono;
 extern crate cursive;
 extern crate cursive_table_view;
 
+use std::env;
+use std::path::PathBuf;
+use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};
+
 use cursive::{Cursive, CursiveRunnable};
 use cursive::event::{Event, Key};
 use cursive::traits::*;
 use cursive::views::{DebugView, LinearLayout, Panel};
 use cursive_table_view::TableView;
 
-use crate::table::{BasicColumn, EntryType, ProtocolEntry};
+use crate::table::{BasicColumn, EntryType, ProtocolEntry, ProtocolTable, table_name};
 
 mod style;
 mod table;
@@ -44,11 +48,13 @@ fn main() {
     app.update_theme(style::set_default_style);
 
     app.run();
+
+    save_and_exit(&mut app);
 }
 
 fn add_callbacks(app: &mut CursiveRunnable) {
     // General actions
-    app.add_global_callback('q', |s| s.quit());
+    app.add_global_callback('q', |app| app.quit());
     app.add_global_callback('x', |s| {
         s.add_layer(help::help_menu().with_name(DIALOG_NAME))
     });
@@ -86,6 +92,33 @@ fn dummy_data(table: &mut TableView<ProtocolEntry, BasicColumn>) {
     table.insert_item(ProtocolEntry::new(
         EntryType::Task, "Ceasar".to_string(), "yep yep yep".to_string(),
     ));
+}
+
+fn tmp_csv_path() -> Result<PathBuf, SystemTimeError> {
+    let duration = SystemTime::now().duration_since(UNIX_EPOCH)?;
+    let timestamp = duration.as_secs();
+
+    let mut temp_path = env::temp_dir();
+    let protocol_file = format!("{}_protocol.csv", timestamp);
+    temp_path.push(protocol_file);
+
+    Ok(temp_path)
+}
+
+fn save_and_exit(app: &mut CursiveRunnable) {
+     app.call_on_name(table_name(), |table: &mut ProtocolTable| {
+        let entries = table.borrow_items();
+
+        if let Ok(tmp_csv_path) = tmp_csv_path() {
+            if let Err(err) = report::save_csv(entries, &tmp_csv_path) {
+                eprintln!("{}", err);
+            } else {
+                if let Some(path_str) = tmp_csv_path.to_str() {
+                    println!("Saved protocol to temp file {}", path_str);
+                }
+            }
+        };
+    });
 }
 
 fn is_dialog_open(app: &mut Cursive) -> bool {

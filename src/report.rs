@@ -1,22 +1,33 @@
-use std::fmt::{Display, Formatter};
+use std::io;
+use std::fs::File;
+use std::io::prelude::*;
+use std::path::PathBuf;
+
 use chrono::Local;
+
 use crate::{EntryType, ProtocolEntry};
 
+pub fn print_raw(protocol_entries: Vec<ProtocolEntry>) {
+    let participants = collect_participants(&protocol_entries);
+    println!("Participants: {:?}", participants);
 
-fn print_raw(protocol_entries: Vec<ProtocolEntry>) {
     for e in protocol_entries {
         println!("{}", e);
     }
 }
 
-fn print_csv(protocol_entries: Vec<ProtocolEntry>) {
-    println!("{}", ProtocolEntry::CSV_HEADER);
+pub fn save_csv(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Result<()> {
+    let mut csv = File::create(&path)?;
+
+    csv.write_all(format!("{}\n", ProtocolEntry::CSV_HEADER).as_bytes())?;
     for e in protocol_entries {
-        println!("{}", e.as_csv());
+        csv.write_all(format!("{}\n", e.as_csv()).as_bytes())?;
     }
+
+    Ok(())
 }
 
-fn print_markdown(protocol_entries: Vec<ProtocolEntry>, entry_type: EntryType) {
+pub fn print_markdown(protocol_entries: Vec<ProtocolEntry>, entry_type: EntryType) {
     let mut infos: Vec<ProtocolEntry> = Vec::new();
     let mut decisions: Vec<ProtocolEntry> = Vec::new();
     let mut tasks: Vec<ProtocolEntry> = Vec::new();
@@ -70,7 +81,7 @@ fn print_markdown(protocol_entries: Vec<ProtocolEntry>, entry_type: EntryType) {
     });
 }
 
-fn collect_participants(protocol_entries: &Vec<ProtocolEntry>) -> Vec<String> {
+fn collect_participants(protocol_entries: &[ProtocolEntry]) -> Vec<String> {
     protocol_entries
         .iter()
         .map(|e| e.owner.clone())
