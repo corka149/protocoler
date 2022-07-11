@@ -15,7 +15,7 @@ mod table;
 mod help;
 mod dialog;
 
-const DIALOG_NAME: &'static str = "data_dialog";
+const DIALOG_NAME: &'static str = "app_dialog";
 
 /// MAIN
 fn main() {
@@ -48,7 +48,9 @@ fn main() {
 fn add_callbacks(app: &mut CursiveRunnable) {
     // General actions
     app.add_global_callback('q', |s| s.quit());
-    app.add_global_callback('x', |s| s.add_layer(help::help_menu()));
+    app.add_global_callback('x', |s| {
+        s.add_layer(help::help_menu().with_name(DIALOG_NAME))
+    });
     app.add_global_callback(Event::Key(Key::Esc), |app| {
         if is_dialog_open(app) {
             app.pop_layer();
