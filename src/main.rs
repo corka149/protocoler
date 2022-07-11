@@ -2,8 +2,10 @@ extern crate chrono;
 extern crate cursive;
 extern crate cursive_table_view;
 
+use cursive::{Cursive, CursiveRunnable};
+use cursive::event::{Event, Key};
 use cursive::traits::*;
-use cursive::views::{DebugView, Dialog, LinearLayout};
+use cursive::views::{DebugView, LinearLayout, Panel};
 use cursive_table_view::TableView;
 
 use crate::table::{BasicColumn, EntryType, ProtocolEntry};
@@ -13,9 +15,11 @@ mod table;
 mod help;
 mod dialog;
 
+const DIALOG_NAME: &'static str = "data_dialog";
+
 /// MAIN
 fn main() {
-    let mut siv = cursive::default();
+    let mut app = cursive::default();
 
     let mut table = table::new();
     let debug_view = DebugView::default();
@@ -28,24 +32,45 @@ fn main() {
         .child(debug_view)
         .full_screen();
 
-    siv.add_fullscreen_layer(
-        Dialog::around(full_view)
+    app.add_fullscreen_layer(
+        Panel::new(full_view)
             .title("Protocoler")
             .full_screen(),
     );
 
+    add_callbacks(&mut app);
+
+    app.update_theme(style::set_default_style);
+
+    app.run();
+}
+
+fn add_callbacks(app: &mut CursiveRunnable) {
     // General actions
-    siv.add_global_callback('q', |s| s.quit());
-    siv.add_global_callback('x', |s| s.add_layer(help::help_menu()));
+    app.add_global_callback('q', |s| s.quit());
+    app.add_global_callback('x', |s| s.add_layer(help::help_menu()));
+    app.add_global_callback(Event::Key(Key::Esc), |app| {
+        if is_dialog_open(app) {
+            app.pop_layer();
+        }
+    });
 
     // Table Actions
-    siv.add_global_callback('a', table::add_entry);
-    siv.add_global_callback('e', table::edit_entry);
-    siv.add_global_callback('d', table::delete_entry);
-
-    siv.update_theme(style::set_default_style);
-
-    siv.run();
+    app.add_global_callback('a', |app| {
+        if !is_dialog_open(app) {
+            table::add_entry(app, DIALOG_NAME)
+        }
+    });
+    app.add_global_callback('e', |app| {
+        if !is_dialog_open(app) {
+            table::edit_entry(app, DIALOG_NAME)
+        }
+    });
+    app.add_global_callback('d', |app| {
+        if !is_dialog_open(app) {
+            table::delete_entry(app)
+        }
+    });
 }
 
 fn dummy_data(table: &mut TableView<ProtocolEntry, BasicColumn>) {
@@ -58,4 +83,8 @@ fn dummy_data(table: &mut TableView<ProtocolEntry, BasicColumn>) {
     table.insert_item(ProtocolEntry::new(
         EntryType::Task, "Ceasar".to_string(), "yep yep yep".to_string(),
     ));
+}
+
+fn is_dialog_open(app: &mut Cursive) -> bool {
+    app.debug_name(DIALOG_NAME).is_some()
 }

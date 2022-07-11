@@ -4,6 +4,7 @@ use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
 
 use chrono::prelude::*;
+use cursive::traits::*;
 use cursive::Cursive;
 use cursive::views::ViewRef;
 use cursive_table_view::{TableView, TableViewItem};
@@ -129,12 +130,12 @@ pub fn delete_entry(siv: &mut Cursive) {
 }
 
 /// Edit an entry.
-pub fn add_entry(siv: &mut Cursive) {
-    siv.add_layer(dialog::add_dialog());
+pub fn add_entry(siv: &mut Cursive, name: &str) {
+    siv.add_layer(dialog::add_dialog().with_name(name));
 }
 
 /// Add a new entry.
-pub fn edit_entry(siv: &mut Cursive) {
+pub fn edit_entry(siv: &mut Cursive, name: &str) {
     let table: Option<ViewRef<TableView<ProtocolEntry, BasicColumn>>> = siv.find_name(table_name());
     if table.is_none() {
         return;
@@ -142,7 +143,7 @@ pub fn edit_entry(siv: &mut Cursive) {
     let table: ViewRef<TableView<ProtocolEntry, BasicColumn>> = table.unwrap();
 
     if let Some(entry) = get_current_item(&table) {
-        siv.add_layer(dialog::edit_dialog(entry));
+        siv.add_layer(dialog::edit_dialog(entry).with_name(name));
     }
 }
 
