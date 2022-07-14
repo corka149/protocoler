@@ -19,6 +19,7 @@ mod table;
 mod help;
 mod dialog;
 mod report;
+mod persist;
 
 const DIALOG_NAME: &'static str = "app_dialog";
 
@@ -49,7 +50,7 @@ fn main() {
 
     app.run();
 
-    save_and_exit(&mut app);
+    save_before_exit(&mut app);
 }
 
 fn add_callbacks(app: &mut CursiveRunnable) {
@@ -105,8 +106,14 @@ fn tmp_csv_path() -> Result<PathBuf, SystemTimeError> {
     Ok(temp_path)
 }
 
-fn save_and_exit(app: &mut CursiveRunnable) {
-     app.call_on_name(table_name(), |table: &mut ProtocolTable| {
+fn save_before_exit(app: &mut CursiveRunnable) {
+    let has_path = persist::get_target_path(app).is_some();
+
+    if has_path {
+        return;
+    }
+
+    app.call_on_name(table_name(), |table: &mut ProtocolTable| {
         let entries = table.borrow_items();
 
         if let Ok(tmp_csv_path) = tmp_csv_path() {
