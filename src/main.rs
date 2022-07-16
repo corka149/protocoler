@@ -2,10 +2,6 @@ extern crate chrono;
 extern crate cursive;
 extern crate cursive_table_view;
 
-use std::env;
-use std::path::PathBuf;
-use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};
-
 use cursive::{Cursive, CursiveRunnable};
 use cursive::event::{Event, Key};
 use cursive::traits::*;
@@ -20,6 +16,7 @@ mod help;
 mod dialog;
 mod report;
 mod persist;
+mod util;
 
 const DIALOG_NAME: &'static str = "app_dialog";
 
@@ -95,17 +92,6 @@ fn dummy_data(table: &mut TableView<ProtocolEntry, BasicColumn>) {
     ));
 }
 
-fn tmp_csv_path() -> Result<PathBuf, SystemTimeError> {
-    let duration = SystemTime::now().duration_since(UNIX_EPOCH)?;
-    let timestamp = duration.as_secs();
-
-    let mut temp_path = env::temp_dir();
-    let protocol_file = format!("{}_protocol.csv", timestamp);
-    temp_path.push(protocol_file);
-
-    Ok(temp_path)
-}
-
 fn save_before_exit(app: &mut CursiveRunnable) {
     let has_path = persist::get_target_path(app).is_some();
 
@@ -116,7 +102,7 @@ fn save_before_exit(app: &mut CursiveRunnable) {
     app.call_on_name(table_name(), |table: &mut ProtocolTable| {
         let entries = table.borrow_items();
 
-        if let Ok(tmp_csv_path) = tmp_csv_path() {
+        if let Ok(tmp_csv_path) = util::tmp_csv_path() {
             if let Err(err) = report::save_csv(entries, &tmp_csv_path) {
                 eprintln!("{}", err);
             } else {
