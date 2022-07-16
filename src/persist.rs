@@ -1,8 +1,10 @@
 use std::path::PathBuf;
 use std::str::FromStr;
+
 use cursive::traits::*;
 use cursive::utils::markup::StyledString;
-use cursive::views::{NamedView, TextView};
+use cursive::views::{Dialog, EditView, NamedView, Panel, TextView};
+
 use crate::Cursive;
 use crate::persist::SaveStatus::{Saved, Unsaved};
 
@@ -16,11 +18,11 @@ impl SaveStatus {
     pub fn from_str(as_text: &str) -> SaveStatus {
         match as_text {
             path if !path.starts_with("*") && !path.ends_with("*") => {
-                match  PathBuf::from_str(&path) {
-                    Ok(path) => Saved {path},
+                match PathBuf::from_str(&path) {
+                    Ok(path) => Saved { path },
                     Err(_) => Unsaved
                 }
-            },
+            }
             _ => Unsaved
         }
     }
@@ -46,14 +48,28 @@ impl Into<StyledString> for SaveStatus {
     }
 }
 
+// ===== ===== module ===== =====
+
 const TARGET_FILE_BOX_NAME: &'static str = "target_file";
+
+pub fn save_dialog(content: String) -> Dialog {
+    Dialog::default()
+        .title("Save protocol")
+        .content(Panel::new(
+            EditView::default().content(content).min_width(50)).title("Target path")
+        )
+        .button("Save", |app| unimplemented!())
+        .button("Cancel", |app| {
+            app.pop_layer();
+        })
+}
 
 pub fn target_fila_text() -> NamedView<TextView> {
     TextView::new(Unsaved).with_name(TARGET_FILE_BOX_NAME)
 }
 
 pub fn get_target_path(app: &mut Cursive) -> Option<PathBuf> {
-    if let Some(text_view) =  app.find_name::<TextView>(TARGET_FILE_BOX_NAME) {
+    if let Some(text_view) = app.find_name::<TextView>(TARGET_FILE_BOX_NAME) {
         let content = text_view.get_content();
         let src = content.source();
         match SaveStatus::from_str(src) {
@@ -63,7 +79,6 @@ pub fn get_target_path(app: &mut Cursive) -> Option<PathBuf> {
     } else {
         None
     }
-
 }
 
 #[cfg(test)]

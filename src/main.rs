@@ -53,8 +53,19 @@ fn main() {
 fn add_callbacks(app: &mut CursiveRunnable) {
     // General actions
     app.add_global_callback('q', |app| app.quit());
-    app.add_global_callback('x', |s| {
-        s.add_layer(help::help_menu().with_name(DIALOG_NAME))
+    app.add_global_callback('x', |app| {
+        app.add_layer(help::help_menu().with_name(DIALOG_NAME))
+    });
+    app.add_global_callback('s', | app| {
+        let content = persist::get_target_path(app)
+            .map(
+                |path|
+                    path.to_str().map(
+                        |path_str| path_str.to_string()
+                    ).unwrap_or_default()
+            ).unwrap_or_default();
+
+        app.add_layer(persist::save_dialog(content).with_name(DIALOG_NAME))
     });
     app.add_global_callback(Event::Key(Key::Esc), |app| {
         if is_dialog_open(app) {
