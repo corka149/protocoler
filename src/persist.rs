@@ -54,6 +54,10 @@ impl Into<StyledString> for SaveStatus {
 const TARGET_FILE_BOX_NAME: &'static str = "target_file";
 
 pub fn save_dialog(content: String) -> Dialog {
+    let hint = TextView::new(
+      "File extension determines format. (.csv, .md and plain (any other ext.))"
+    );
+
     let target_input = Panel::new(
         EditView::default().content(content).min_width(50)
     ).title("Target path");
@@ -64,6 +68,9 @@ pub fn save_dialog(content: String) -> Dialog {
             LinearLayout::vertical()
                 .child(DummyView)
                 .child(target_input)
+                .child(DummyView)
+                .child(hint)
+                .child(DummyView)
         )
         .button("Save", |app| unimplemented!())
         .button("Cancel", |app| {
