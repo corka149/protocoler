@@ -1,11 +1,12 @@
 use std::path::PathBuf;
 use std::str::FromStr;
 
+use cursive::align::{HAlign, VAlign};
 use cursive::traits::*;
 use cursive::utils::markup::StyledString;
-use cursive::views::{Dialog, EditView, NamedView, Panel, TextView};
+use cursive::views::{Dialog, DummyView, EditView, NamedView, Panel, TextView};
 
-use crate::Cursive;
+use crate::{Cursive, LinearLayout};
 use crate::persist::SaveStatus::{Saved, Unsaved};
 
 #[derive(Debug, PartialEq)]
@@ -53,10 +54,16 @@ impl Into<StyledString> for SaveStatus {
 const TARGET_FILE_BOX_NAME: &'static str = "target_file";
 
 pub fn save_dialog(content: String) -> Dialog {
+    let target_input = Panel::new(
+        EditView::default().content(content).min_width(50)
+    ).title("Target path");
+
     Dialog::default()
         .title("Save protocol")
-        .content(Panel::new(
-            EditView::default().content(content).min_width(50)).title("Target path")
+        .content(
+            LinearLayout::vertical()
+                .child(DummyView)
+                .child(target_input)
         )
         .button("Save", |app| unimplemented!())
         .button("Cancel", |app| {
