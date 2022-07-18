@@ -24,10 +24,7 @@ const DIALOG_NAME: &'static str = "app_dialog";
 /// MAIN
 fn main() {
     let mut app = cursive::default();
-
     let mut table = table::new();
-
-    dummy_data(&mut table);
 
     let full_view = LinearLayout::vertical()
         .child(table.with_name(table::table_name()).full_height())
@@ -88,18 +85,6 @@ fn add_callbacks(app: &mut CursiveRunnable) {
             table::delete_entry(app)
         }
     });
-}
-
-fn dummy_data(table: &mut TableView<ProtocolEntry, BasicColumn>) {
-    table.insert_item(ProtocolEntry::new(
-        EntryType::Info, "Alice".to_string(), "Let`s go".to_string(),
-    ));
-    table.insert_item(ProtocolEntry::new(
-        EntryType::Decision, "Bob".to_string(), "Are we done?".to_string(),
-    ));
-    table.insert_item(ProtocolEntry::new(
-        EntryType::Task, "Ceasar".to_string(), "yep yep yep".to_string(),
-    ));
 }
 
 fn save_before_exit(app: &mut CursiveRunnable) {
