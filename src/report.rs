@@ -1,106 +1,104 @@
-//! `protocol` creates protocol reports.
-use super::record::{EntryType, ProtocolEntry};
-use super::util::*;
-use chrono::prelude::*;
-use std::process::exit;
+use std::fs::File;
+use std::io;
+use std::io::prelude::*;
+use std::path::PathBuf;
 
-const RAW_FORMAT: &str = "raw";
-const MARKDOWN_FORMAT: &str = "markdown";
-const CSV_FORMAT: &str = "csv";
-const ALLOWED_FORMATS: [&str; 3] = [RAW_FORMAT, MARKDOWN_FORMAT, CSV_FORMAT];
+use chrono::Local;
 
-/// Outputs the protocol entries in different formats.
-pub fn output(participants: Vec<String>, protocol_entries: Vec<ProtocolEntry>) {
-    match select_format().as_str() {
-        RAW_FORMAT => print_raw(participants, protocol_entries),
-        MARKDOWN_FORMAT => print_markdown(participants, protocol_entries),
-        CSV_FORMAT => print_csv(protocol_entries),
-        unknown => {
-            eprintln!("Unknown format'{}'", unknown);
-            exit(1)
-        }
-    }
-}
+use crate::{EntryType, ProtocolEntry};
 
-fn select_format() -> String {
-    loop {
-        match input("Select output format [raw, markdown, csv]") {
-            Ok(format) => {
-                let is_allowed = ALLOWED_FORMATS.iter().any(|f| f == &format);
+pub fn save_raw(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Result<()> {
+    let mut text_file = File::create(&path)?;
 
-                if is_allowed {
-                    return format;
-                }
-            }
-            Err(err) => println!("{}", err),
-        }
-    }
-}
-
-fn print_raw(participants: Vec<String>, protocol_entries: Vec<ProtocolEntry>) {
-    println!("Participants: {:?}", participants);
+    let participants = collect_participants(protocol_entries);
+    write(&mut text_file, &format!("Participants: {:?}\n", participants))?;
 
     for e in protocol_entries {
-        println!("{}", e);
+        text_file.write_all(format!("{}\n", e).as_bytes())?
     }
+
+    Ok(())
 }
 
-fn print_markdown(participants: Vec<String>, protocol_entries: Vec<ProtocolEntry>) {
-    let mut infos: Vec<ProtocolEntry> = Vec::new();
-    let mut decisions: Vec<ProtocolEntry> = Vec::new();
-    let mut tasks: Vec<ProtocolEntry> = Vec::new();
+pub fn save_csv(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Result<()> {
+    let mut csv = File::create(&path)?;
+
+    write(&mut csv, &format!("{}\n", ProtocolEntry::CSV_HEADER))?;
+    for e in protocol_entries {
+        write(&mut csv, &format!("{}\n", e.as_csv()))?;
+    }
+
+    Ok(())
+}
+
+pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Result<()> {
+    let mut md_file = File::create(&path)?;
+    let mut infos: Vec<&ProtocolEntry> = Vec::new();
+    let mut decisions: Vec<&ProtocolEntry> = Vec::new();
+    let mut tasks: Vec<&ProtocolEntry> = Vec::new();
+    let participants = collect_participants(protocol_entries);
 
     for e in protocol_entries {
-        match e.entry_type() {
+        match e.entry_type {
             EntryType::Info => infos.push(e),
             EntryType::Decision => decisions.push(e),
             EntryType::Task => tasks.push(e),
         }
     }
 
-    println!("# Protocol {}", Local::now().format("%Y-%m-%d"));
+    write(&mut md_file, &format!("# Protocol {}\n", Local::now().format("%Y-%m-%d")))?;
 
-    println!("\n## Participants\n");
-    participants
-        .iter()
-        .for_each(|participant| println!("* {}", participant));
+    write(&mut md_file, "\n## Participants\n")?;
+    for participant in participants {
+        write(&mut md_file, &format!("* {}\n", participant))?;
+    }
 
-    println!("\n## Information\n");
-    println!("|Time|Said by|text|");
-    println!("| --- | --- | ---|");
-    infos.iter().for_each(|e| {
-        println!(
-            "|{}|{}|{}|",
-            e.timestamp().format("%H:%M:%S"),
-            e.said_by(),
-            e.text(),
-        )
-    });
+    write(&mut md_file, "\n## Information\n")?;
+    write(&mut md_file, "|Time|Said by|text|\n")?;
+    write(&mut md_file, "| --- | --- | ---|\n")?;
+    for e in infos {
+        write(&mut md_file,
+              &format!(
+                  "|{}|{}|{}|\n",
+                  e.timestamp.format("%H:%M:%S"),
+                  e.owner,
+                  e.message,
+              ))?;
+    }
 
-    println!("---\n## Decisions\n");
-    decisions.iter().for_each(|e| {
-        println!(
-            "* <> {} - {}/{}",
-            e.text(),
-            e.said_by(),
-            e.timestamp().format("%H:%M:%S")
-        )
-    });
+    write(&mut md_file, "---\n## Decisions\n")?;
+    for e in decisions {
+        write(&mut md_file,
+              &format!(
+                  "* <> {} - {}/{}\n",
+                  e.message,
+                  e.owner,
+                  e.timestamp.format("%H:%M:%S")
+              ))?;
+    }
 
-    println!("---\n## Tasks\n");
-    tasks.iter().for_each(|e| {
-        println!(
-            "* [] {} - {}/{}",
-            e.text(),
-            e.said_by(),
-            e.timestamp().format("%H:%M:%S")
-        )
-    });
+    write(&mut md_file, "---\n## Tasks\n")?;
+    for e in tasks {
+        write(&mut md_file,
+              &format!(
+                  "* [] {} - {}/{}\n",
+                  e.message,
+                  e.owner,
+                  e.timestamp.format("%H:%M:%S")
+              ))?;
+    };
+
+    Ok(())
 }
 
-fn print_csv(protocol_entries: Vec<ProtocolEntry>) {
-    println!("{}", ProtocolEntry::CSV_HEADER);
-    for e in protocol_entries {
-        println!("{}", e.as_csv());
-    }
+fn write(file: &mut File, text: &str) -> io::Result<()> {
+    file.write_all(text.as_bytes())?;
+    Ok(())
+}
+
+fn collect_participants(protocol_entries: &[ProtocolEntry]) -> Vec<String> {
+    protocol_entries
+        .iter()
+        .map(|e| e.owner.clone())
+        .collect::<Vec<String>>()
 }

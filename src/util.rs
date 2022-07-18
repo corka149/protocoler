@@ -1,13 +1,14 @@
-//! `util` contains reusable functions.
-use std::io;
+use std::env;
+use std::path::PathBuf;
+use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};
 
-/// Asks for an user for input.
-pub fn input(prompt: &str) -> Result<String, io::Error> {
-    let mut buffer = String::new();
-    let stdin = io::stdin();
+pub fn tmp_csv_path() -> Result<PathBuf, SystemTimeError> {
+    let duration = SystemTime::now().duration_since(UNIX_EPOCH)?;
+    let timestamp = duration.as_secs();
 
-    println!("{}", prompt);
-    stdin.read_line(&mut buffer)?;
+    let mut temp_path = env::temp_dir();
+    let protocol_file = format!("{}_protocol.csv", timestamp);
+    temp_path.push(protocol_file);
 
-    Ok(buffer.trim().to_string())
+    Ok(temp_path)
 }
