@@ -115,15 +115,15 @@ fn save(app: &mut Cursive) {
         if let (Some(mut table), Ok(target_path)) = (table, target_path) {
             let entries = table.borrow_items();
 
-            let save_result = match target_path {
-                path if path.ends_with(".md") =>
-                    report::save_markdown(entries, &path),
+            let save_result = match target_path.extension() {
+                Some(ext) if ext == "md" =>
+                    report::save_markdown(entries, &target_path),
 
-                path if path.ends_with(".csv") =>
-                    report::save_csv(entries, &path),
+                Some(ext) if ext == "csv" =>
+                    report::save_csv(entries, &target_path),
 
-                path =>
-                    report::save_raw(entries, &path)
+                _ =>
+                    report::save_raw(entries, &target_path)
             };
         }
     });

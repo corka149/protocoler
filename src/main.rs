@@ -32,7 +32,6 @@ fn main() {
     let full_view = LinearLayout::vertical()
         .child(table.with_name(table::table_name()).full_height())
         .child(help::hint_bar())
-        .child(debug_view)
         .full_screen();
 
     app.add_fullscreen_layer(

@@ -11,7 +11,7 @@ pub fn save_raw(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Resul
     let mut text_file = File::create(&path)?;
 
     let participants = collect_participants(&protocol_entries);
-    write(&mut text_file, &format!("Participants: {:?}", participants))?;
+    write(&mut text_file, &format!("Participants: {:?}\n", participants))?;
 
     for e in protocol_entries {
         text_file.write_all(format!("{}\n", e).as_bytes())?
@@ -46,20 +46,20 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
         }
     }
 
-    write(&mut md_file, &format!("# Protocol {}", Local::now().format("%Y-%m-%d")))?;
+    write(&mut md_file, &format!("# Protocol {}\n", Local::now().format("%Y-%m-%d")))?;
 
     write(&mut md_file, &format!("\n## Participants\n"))?;
-    participants
-        .iter()
-        .for_each(|participant| println!("* {}", participant));
+    for participant in participants {
+        write(&mut md_file, &format!("* {}\n", participant))?;
+    }
 
     write(&mut md_file, &format!("\n## Information\n"))?;
-    write(&mut md_file, &format!("|Time|Said by|text|"))?;
-    write(&mut md_file, &format!("| --- | --- | ---|"))?;
+    write(&mut md_file, &format!("|Time|Said by|text|\n"))?;
+    write(&mut md_file, &format!("| --- | --- | ---|\n"))?;
     for e in infos {
         write(&mut md_file,
               &format!(
-                  "|{}|{}|{}|",
+                  "|{}|{}|{}|\n",
                   e.timestamp.format("%H:%M:%S"),
                   e.owner,
                   e.message,
@@ -70,7 +70,7 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
     for e in decisions {
         write(&mut md_file,
               &format!(
-                  "* <> {} - {}/{}",
+                  "* <> {} - {}/{}\n",
                   e.message,
                   e.owner,
                   e.timestamp.format("%H:%M:%S")
@@ -81,7 +81,7 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
     for e in tasks {
         write(&mut md_file,
               &format!(
-                  "* [] {} - {}/{}",
+                  "* [] {} - {}/{}\n",
                   e.message,
                   e.owner,
                   e.timestamp.format("%H:%M:%S")
