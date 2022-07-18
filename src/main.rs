@@ -5,7 +5,7 @@ extern crate cursive_table_view;
 use cursive::{Cursive, CursiveRunnable};
 use cursive::event::{Event, Key};
 use cursive::traits::*;
-use cursive::views::{DebugView, LinearLayout, Panel};
+use cursive::views::{LinearLayout, Panel};
 use cursive_table_view::TableView;
 
 use crate::table::{BasicColumn, EntryType, ProtocolEntry, ProtocolTable, table_name};
@@ -17,6 +17,7 @@ mod dialog;
 mod report;
 mod persist;
 mod util;
+mod error;
 
 const DIALOG_NAME: &'static str = "app_dialog";
 
@@ -25,7 +26,6 @@ fn main() {
     let mut app = cursive::default();
 
     let mut table = table::new();
-    let debug_view = DebugView::default();
 
     dummy_data(&mut table);
 

@@ -2,7 +2,7 @@
 
 use cursive::traits::*;
 use cursive::views::{Dialog, DummyView, LinearLayout, ListView, Panel, TextView};
-use crate::persist;
+use crate::{error, persist};
 
 /// Creates a help menu.
 pub fn help_menu() -> Dialog {
@@ -24,6 +24,8 @@ pub fn help_menu() -> Dialog {
 pub fn hint_bar() -> LinearLayout {
     let content = LinearLayout::horizontal()
         .child(TextView::new("x = menu"))
+        .child(DummyView::full_width(DummyView))
+        .child(error::error_output())
         .child(DummyView::full_width(DummyView))
         .child(persist::target_fila_text());
 
