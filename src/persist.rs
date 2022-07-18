@@ -1,12 +1,11 @@
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use cursive::align::{HAlign, VAlign};
 use cursive::traits::*;
 use cursive::utils::markup::StyledString;
-use cursive::views::{Dialog, DummyView, EditView, NamedView, Panel, TextView};
+use cursive::views::{Dialog, DummyView, EditView, NamedView, Panel, TextView, ViewRef};
 
-use crate::{Cursive, LinearLayout};
+use crate::{Cursive, LinearLayout, ProtocolTable, report, table_name};
 use crate::persist::SaveStatus::{Saved, Unsaved};
 
 #[derive(Debug, PartialEq)]
@@ -51,15 +50,19 @@ impl Into<StyledString> for SaveStatus {
 
 // ===== ===== module ===== =====
 
-const TARGET_FILE_BOX_NAME: &'static str = "target_file";
+const TARGET_FILE_BOX_NAME: &'static str = "target_file_box";
+const TARGET_FILE_INPUT_NAME: &'static str = "target_file_input";
 
 pub fn save_dialog(content: String) -> Dialog {
     let hint = TextView::new(
-      "File extension determines format. (.csv, .md and plain (any other ext.))"
+        "File extension determines format. (.csv, .md and plain (any other ext.))"
     );
 
     let target_input = Panel::new(
-        EditView::default().content(content).min_width(50)
+        EditView::default()
+            .content(content)
+            .with_name(TARGET_FILE_INPUT_NAME)
+            .min_width(50)
     ).title("Target path");
 
     Dialog::default()
@@ -72,7 +75,7 @@ pub fn save_dialog(content: String) -> Dialog {
                 .child(hint)
                 .child(DummyView)
         )
-        .button("Save", |app| unimplemented!())
+        .button("Save", save)
         .button("Cancel", |app| {
             app.pop_layer();
         })
@@ -93,6 +96,37 @@ pub fn get_target_path(app: &mut Cursive) -> Option<PathBuf> {
     } else {
         None
     }
+}
+
+fn save(app: &mut Cursive) {
+    let text_box = app.find_name::<TextView>(TARGET_FILE_BOX_NAME);
+    let table: Option<ViewRef<ProtocolTable>> = app.find_name(table_name());
+
+    app.call_on_name(TARGET_FILE_INPUT_NAME, |target_input: &mut EditView| {
+        let target_path = target_input.get_content();
+        let target_path = target_path.as_str();
+
+        if let Some(mut text_box) = text_box {
+            text_box.set_content(target_path);
+        }
+
+        let target_path = PathBuf::from_str(target_path);
+
+        if let (Some(mut table), Ok(target_path)) = (table, target_path) {
+            let entries = table.borrow_items();
+
+            let save_result = match target_path {
+                path if path.ends_with(".md") =>
+                    report::save_markdown(entries, &path),
+
+                path if path.ends_with(".csv") =>
+                    report::save_csv(entries, &path),
+
+                path =>
+                    report::save_raw(entries, &path)
+            };
+        }
+    });
 }
 
 #[cfg(test)]
