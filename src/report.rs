@@ -11,7 +11,7 @@ pub fn save_raw(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Resul
     let mut text_file = File::create(&path)?;
 
     let participants = collect_participants(&protocol_entries);
-    println!("Participants: {:?}", participants);
+    write(&mut text_file, &format!("Participants: {:?}", participants))?;
 
     for e in protocol_entries {
         text_file.write_all(format!("{}\n", e).as_bytes())?
@@ -23,9 +23,9 @@ pub fn save_raw(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Resul
 pub fn save_csv(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Result<()> {
     let mut csv = File::create(&path)?;
 
-    csv.write_all(format!("{}\n", ProtocolEntry::CSV_HEADER).as_bytes())?;
+    write(&mut csv, &format!("{}\n", ProtocolEntry::CSV_HEADER))?;
     for e in protocol_entries {
-        csv.write_all(format!("{}\n", e.as_csv()).as_bytes())?;
+        write(&mut csv, &format!("{}\n", e.as_csv()))?;
     }
 
     Ok(())

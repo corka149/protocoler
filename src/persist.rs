@@ -127,6 +127,8 @@ fn save(app: &mut Cursive) {
             };
         }
     });
+
+    app.pop_layer();
 }
 
 #[cfg(test)]
