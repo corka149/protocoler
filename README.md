@@ -4,8 +4,8 @@
 
 > A minimalistic typer for protocols
 
-A Fast and minimalistic protocol generator built powered by Clap & Rust.
-It can output the protocol in different formats.
+A Fast and minimalistic protocol generator powered by Rust.
+It can output protocols in different formats.
 
 ## Usage
 
