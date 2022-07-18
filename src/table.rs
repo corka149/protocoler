@@ -178,5 +178,5 @@ pub fn get_current_item(table: &ProtocolTable) -> Option<&ProtocolEntry> {
         }
     }
 
-    return None;
+    None
 }

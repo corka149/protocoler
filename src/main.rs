@@ -6,7 +6,6 @@ use cursive::{Cursive, CursiveRunnable};
 use cursive::event::{Event, Key};
 use cursive::traits::*;
 use cursive::views::{LinearLayout, Panel};
-use cursive_table_view::TableView;
 
 use crate::table::{BasicColumn, EntryType, ProtocolEntry, ProtocolTable, table_name};
 
@@ -19,12 +18,12 @@ mod persist;
 mod util;
 mod error;
 
-const DIALOG_NAME: &'static str = "app_dialog";
+const DIALOG_NAME: &str = "app_dialog";
 
 /// MAIN
 fn main() {
     let mut app = cursive::default();
-    let mut table = table::new();
+    let table = table::new();
 
     let full_view = LinearLayout::vertical()
         .child(table.with_name(table::table_name()).full_height())
@@ -52,7 +51,7 @@ fn add_callbacks(app: &mut CursiveRunnable) {
     app.add_global_callback('x', |app| {
         app.add_layer(help::help_menu().with_name(DIALOG_NAME))
     });
-    app.add_global_callback('s', | app| {
+    app.add_global_callback('s', |app| {
         let content = persist::get_target_path(app)
             .map(
                 |path|
@@ -100,10 +99,8 @@ fn save_before_exit(app: &mut CursiveRunnable) {
         if let Ok(tmp_csv_path) = util::tmp_csv_path() {
             if let Err(err) = report::save_csv(entries, &tmp_csv_path) {
                 eprintln!("{}", err);
-            } else {
-                if let Some(path_str) = tmp_csv_path.to_str() {
-                    println!("Saved protocol to temp file {}", path_str);
-                }
+            } else if let Some(path_str) = tmp_csv_path.to_str() {
+                println!("Saved protocol to temp file {}", path_str);
             }
         };
     });

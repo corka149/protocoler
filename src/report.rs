@@ -10,14 +10,14 @@ use crate::{EntryType, ProtocolEntry};
 pub fn save_raw(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Result<()> {
     let mut text_file = File::create(&path)?;
 
-    let participants = collect_participants(&protocol_entries);
+    let participants = collect_participants(protocol_entries);
     write(&mut text_file, &format!("Participants: {:?}\n", participants))?;
 
     for e in protocol_entries {
         text_file.write_all(format!("{}\n", e).as_bytes())?
     }
 
-    return Ok(());
+    Ok(())
 }
 
 pub fn save_csv(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Result<()> {
@@ -36,7 +36,7 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
     let mut infos: Vec<&ProtocolEntry> = Vec::new();
     let mut decisions: Vec<&ProtocolEntry> = Vec::new();
     let mut tasks: Vec<&ProtocolEntry> = Vec::new();
-    let participants = collect_participants(&protocol_entries);
+    let participants = collect_participants(protocol_entries);
 
     for e in protocol_entries {
         match e.entry_type {
@@ -48,14 +48,14 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
 
     write(&mut md_file, &format!("# Protocol {}\n", Local::now().format("%Y-%m-%d")))?;
 
-    write(&mut md_file, &format!("\n## Participants\n"))?;
+    write(&mut md_file, "\n## Participants\n")?;
     for participant in participants {
         write(&mut md_file, &format!("* {}\n", participant))?;
     }
 
-    write(&mut md_file, &format!("\n## Information\n"))?;
-    write(&mut md_file, &format!("|Time|Said by|text|\n"))?;
-    write(&mut md_file, &format!("| --- | --- | ---|\n"))?;
+    write(&mut md_file, "\n## Information\n")?;
+    write(&mut md_file, "|Time|Said by|text|\n")?;
+    write(&mut md_file, "| --- | --- | ---|\n")?;
     for e in infos {
         write(&mut md_file,
               &format!(
@@ -66,7 +66,7 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
               ))?;
     }
 
-    write(&mut md_file, &format!("---\n## Decisions\n"))?;
+    write(&mut md_file, "---\n## Decisions\n")?;
     for e in decisions {
         write(&mut md_file,
               &format!(
@@ -77,7 +77,7 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
               ))?;
     }
 
-    write(&mut md_file, &format!("---\n## Tasks\n"))?;
+    write(&mut md_file, "---\n## Tasks\n")?;
     for e in tasks {
         write(&mut md_file,
               &format!(
@@ -88,12 +88,12 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
               ))?;
     };
 
-    return Ok(());
+    Ok(())
 }
 
 fn write(file: &mut File, text: &str) -> io::Result<()> {
     file.write_all(text.as_bytes())?;
-    return Ok(());
+    Ok(())
 }
 
 fn collect_participants(protocol_entries: &[ProtocolEntry]) -> Vec<String> {

@@ -16,10 +16,12 @@ enum SaveStatus {
 }
 
 impl SaveStatus {
+    pub const UNSAVED: &'static str = "*unsaved*";
+
     pub fn from_str(as_text: &str) -> SaveStatus {
         match as_text {
-            path if !path.starts_with("*") && !path.ends_with("*") => {
-                match PathBuf::from_str(&path) {
+            path if !path.starts_with('*') && !path.ends_with('*') => {
+                match PathBuf::from_str(path) {
                     Ok(path) => Saved { path },
                     Err(_) => Unsaved
                 }
@@ -35,24 +37,34 @@ impl Default for SaveStatus {
     }
 }
 
-impl Into<StyledString> for SaveStatus {
-    fn into(self) -> StyledString {
-        let content = match self {
-            Unsaved => "*unsaved*".to_string(),
-            Saved { path } => match path.to_str() {
-                None => "*unknown*".to_string(),
-                Some(path_str) => path_str.to_string()
-            }
-        };
+impl From<StyledString> for SaveStatus {
+    fn from(styled_string: StyledString) -> Self {
+        SaveStatus::from_str(styled_string.source())
+    }
+}
 
-        StyledString::plain(content)
+impl From<String> for SaveStatus {
+    fn from(string: String) -> Self {
+        SaveStatus::from_str(&string)
+    }
+}
+
+impl From<SaveStatus> for String {
+    fn from(status: SaveStatus) -> Self {
+        match status {
+            Unsaved => SaveStatus::UNSAVED.to_string(),
+            Saved { path } => match path.to_str() {
+                None => SaveStatus::UNSAVED.to_string(),
+                Some(path) => path.to_string()
+            }
+        }
     }
 }
 
 // ===== ===== module ===== =====
 
-const TARGET_FILE_BOX_NAME: &'static str = "target_file_box";
-const TARGET_FILE_INPUT_NAME: &'static str = "target_file_input";
+const TARGET_FILE_BOX_NAME: &str = "target_file_box";
+const TARGET_FILE_INPUT_NAME: &str = "target_file_input";
 
 pub fn save_dialog(content: String) -> Dialog {
     let hint = TextView::new(
@@ -129,7 +141,7 @@ fn save(app: &mut Cursive) {
             }
         }
 
-        return true;
+        true
     });
 
     if success.unwrap_or(true) {
