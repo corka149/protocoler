@@ -12,3 +12,19 @@ It can output protocols in different formats.
 `protocoler` is a Text-based UI app. Run `protocoler` and press x for help.
 
 ![UI example](.github/screenshot.png)
+
+## Build `protocoler`
+
+_Requirements:_
+
+- git
+- Rust with cargo installation ([see here](https://rustup.rs/))
+
+_Build it:_
+
+```sh
+git clone -b v0.3.0 --single-branch git@github.com:corka149/protocoler.git
+cargo build -r
+```
+
+Enjoy your `protocoler` binary at `target/release/protocoler`.
