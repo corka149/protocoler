@@ -8,5 +8,9 @@ edition = "2018"
 [dependencies]
 clap = "2.33.3"
 chrono = "0.4.19"
-cursive = { version = "*", features = ["toml"] }
 cursive_table_view = "0.14"
+
+[dependencies.cursive]
+version = "*"
+default-features = false
+features = ["crossterm-backend"]
