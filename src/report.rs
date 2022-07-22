@@ -7,6 +7,20 @@ use chrono::Local;
 
 use crate::{EntryType, ProtocolEntry};
 
+/// Saves the protocol in the format inferred from the file extension.
+pub fn save(entries: &[ProtocolEntry], target_path: &PathBuf) -> io::Result<()> {
+    match target_path.extension() {
+        Some(ext) if ext == "md" =>
+            save_markdown(entries, &target_path),
+
+        Some(ext) if ext == "csv" =>
+            save_csv(entries, &target_path),
+
+        _ =>
+            save_raw(entries, &target_path)
+    }
+}
+
 pub fn save_raw(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Result<()> {
     let mut text_file = File::create(&path)?;
 

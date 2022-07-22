@@ -87,14 +87,20 @@ fn add_callbacks(app: &mut CursiveRunnable) {
 }
 
 fn save_before_exit(app: &mut CursiveRunnable) {
-    let has_path = persist::get_target_path(app).is_some();
-
-    if has_path {
-        return;
-    }
+    let tar_path = persist::get_target_path(app);
 
     app.call_on_name(table_name(), |table: &mut ProtocolTable| {
         let entries = table.borrow_items();
+
+        if let Some(tar_path) = tar_path {
+            if let Err(err) = report::save(entries, &tar_path) {
+                eprintln!("{}", err);
+            } else if let Some(path_str) = tar_path.to_str() {
+                println!("Saved protocol to temp file {}", path_str);
+            }
+            return;
+        }
+
 
         if let Ok(tmp_csv_path) = util::tmp_csv_path() {
             if let Err(err) = report::save_csv(entries, &tmp_csv_path) {
