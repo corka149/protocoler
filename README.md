@@ -28,3 +28,10 @@ cargo build -r
 ```
 
 Enjoy your `protocoler` binary at `target/release/protocoler`.
+
+## TODOs
+
+- Load entries from saved csv
+- Convert csv to other Markdown
+- Tests
+- Clean up and comments
