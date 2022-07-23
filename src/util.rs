@@ -1,3 +1,5 @@
+//! Module for helper functions.
+
 use std::env;
 use std::path::PathBuf;
 use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};

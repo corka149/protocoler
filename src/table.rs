@@ -13,6 +13,7 @@ use crate::dialog;
 
 pub type ProtocolTable = TableView<ProtocolEntry, BasicColumn>;
 
+/// Columns of protocol entry table.
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub enum BasicColumn {
     Timestamp,
@@ -21,6 +22,7 @@ pub enum BasicColumn {
     Message,
 }
 
+/// Category of protocol entries.
 #[derive(Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Debug)]
 pub enum EntryType {
     Info,
@@ -44,6 +46,7 @@ impl Default for EntryType {
     }
 }
 
+/// ProtocolEntry holds the details of a protocol note.
 #[derive(Clone, Debug)]
 pub struct ProtocolEntry {
     pub timestamp: DateTime<Local>,
@@ -171,6 +174,7 @@ pub fn edit_entry(siv: &mut Cursive, name: &str) {
     }
 }
 
+/// Returns the selected protocol entry.
 pub fn get_current_item(table: &ProtocolTable) -> Option<&ProtocolEntry> {
     if let Some(index) = table.item() {
         if let Some(entry) = table.borrow_item(index) {

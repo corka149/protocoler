@@ -1,3 +1,5 @@
+//! `report` for saving protocols in different formats.
+
 use std::fs::File;
 use std::io;
 use std::io::prelude::*;
@@ -21,6 +23,7 @@ pub fn save(entries: &[ProtocolEntry], target_path: &PathBuf) -> io::Result<()> 
     }
 }
 
+/// Saves the protocol entries in their String format.
 pub fn save_raw(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Result<()> {
     let mut text_file = File::create(&path)?;
 
@@ -34,6 +37,7 @@ pub fn save_raw(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Resul
     Ok(())
 }
 
+/// Saves all protocol entries  in CSV format.
 pub fn save_csv(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Result<()> {
     let mut csv = File::create(&path)?;
 
@@ -45,6 +49,7 @@ pub fn save_csv(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Resul
     Ok(())
 }
 
+/// Saves the protocol entries in a Jira compatible Markdown format.
 pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Result<()> {
     let mut md_file = File::create(&path)?;
     let mut infos: Vec<&ProtocolEntry> = Vec::new();

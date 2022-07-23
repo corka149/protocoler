@@ -1,4 +1,6 @@
-    use std::path::PathBuf;
+//! Module for the save process.
+
+use std::path::PathBuf;
 use std::str::FromStr;
 
 use cursive::traits::*;
@@ -8,6 +10,7 @@ use cursive::views::{Dialog, DummyView, EditView, NamedView, Panel, TextView, Vi
 use crate::{Cursive, error, LinearLayout, ProtocolTable, report, table_name};
 use crate::persist::SaveStatus::{Saved, Unsaved};
 
+/// Persistence status of the current protocol.
 #[derive(Debug, PartialEq)]
 enum SaveStatus {
     Unsaved,
@@ -98,6 +101,7 @@ pub fn target_fila_text() -> NamedView<TextView> {
     TextView::new(Unsaved).with_name(TARGET_FILE_BOX_NAME)
 }
 
+/// Current target path for saving entered by the user via save dialog.
 pub fn get_target_path(app: &mut Cursive) -> Option<PathBuf> {
     if let Some(text_view) = app.find_name::<TextView>(TARGET_FILE_BOX_NAME) {
         let content = text_view.get_content();
