@@ -1,6 +1,7 @@
 extern crate chrono;
 extern crate cursive;
 extern crate cursive_table_view;
+//! A minimalistic typer for protocols.
 
 use cursive::{Cursive, CursiveRunnable};
 use cursive::event::{Event, Key};
@@ -45,6 +46,7 @@ fn main() {
     save_before_exit(&mut app);
 }
 
+/// Central place for adding callbacks.
 fn add_callbacks(app: &mut CursiveRunnable) {
     // General actions
     app.add_global_callback('q', |app| app.quit());
@@ -86,6 +88,8 @@ fn add_callbacks(app: &mut CursiveRunnable) {
     });
 }
 
+/// Tries to save last state of the table.
+/// It will use either the entered path or fallback to a temporary CSV path.
 fn save_before_exit(app: &mut CursiveRunnable) {
     let tar_path = persist::get_target_path(app);
 
@@ -112,6 +116,7 @@ fn save_before_exit(app: &mut CursiveRunnable) {
     });
 }
 
+/// Determines whether a closable dialog is open.
 fn is_dialog_open(app: &mut Cursive) -> bool {
     app.debug_name(DIALOG_NAME).is_some()
 }

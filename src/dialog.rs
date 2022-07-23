@@ -1,3 +1,5 @@
+//! Contains the add and edit dialog for a protocol entry.
+
 use cursive::align::HAlign;
 use cursive::traits::*;
 use cursive::views::{Dialog, EditView, Panel, SelectView, TextArea, ViewRef};
@@ -9,12 +11,13 @@ const DIALOG_WIDTH: usize = 70;
 
 // ===== ===== ADD DIALOG ===== =====
 
+/// Dialog for entering a new protocol entry.
 pub fn add_dialog() -> Dialog {
     let content = add_dialog_content();
 
     Dialog::around(content)
         .title("Add")
-        .button("Save", move |s| {
+        .button("Add", move |s| {
             // GET FIELDS
             let owner = s.find_name::<EditView>("owner").map(|e| e.get_content().to_string()).unwrap_or_default();
             let message = s.find_name::<TextArea>("message").map(|t| t.get_content().to_string()).unwrap_or_default();
@@ -25,7 +28,7 @@ pub fn add_dialog() -> Dialog {
             });
             s.pop_layer();
         })
-        .button("Quit", |s| {
+        .button("Cancel", |s| {
             s.pop_layer();
         })
 }
@@ -60,12 +63,13 @@ fn add_dialog_content() -> LinearLayout {
 
 // ===== ===== EDIT DIALOG ===== =====
 
+/// Dialog for editing a protocol entry.
 pub fn edit_dialog(entry: &ProtocolEntry) -> Dialog {
     let content = edit_dialog_content(entry);
 
     Dialog::around(content)
         .title("Edit")
-        .button("Save", move |s| {
+        .button("Edit", move |s| {
             // GET FIELDS
             let owner = s.find_name::<EditView>("owner").map(|e| e.get_content().to_string()).unwrap_or_default();
             let message = s.find_name::<TextArea>("message").map(|t| t.get_content().to_string()).unwrap_or_default();
@@ -76,7 +80,7 @@ pub fn edit_dialog(entry: &ProtocolEntry) -> Dialog {
             });
             s.pop_layer();
         })
-        .button("Quit", |s| {
+        .button("Cancel", |s| {
             s.pop_layer();
         })
 }

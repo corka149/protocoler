@@ -65,6 +65,7 @@ impl From<SaveStatus> for String {
 const TARGET_FILE_BOX_NAME: &str = "target_file_box";
 const TARGET_FILE_INPUT_NAME: &str = "target_file_input";
 
+/// Dialog for entering the save path and triggering the save process.
 pub fn save_dialog(content: String) -> Dialog {
     let hint = TextView::new(
         "File extension determines format. (.csv, .md and plain (any other ext.))"
