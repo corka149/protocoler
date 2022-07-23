@@ -12,14 +12,11 @@ use crate::{EntryType, ProtocolEntry};
 /// Saves the protocol in the format inferred from the file extension.
 pub fn save(entries: &[ProtocolEntry], target_path: &PathBuf) -> io::Result<()> {
     match target_path.extension() {
-        Some(ext) if ext == "md" =>
-            save_markdown(entries, &target_path),
+        Some(ext) if ext == "md" => save_markdown(entries, target_path),
 
-        Some(ext) if ext == "csv" =>
-            save_csv(entries, &target_path),
+        Some(ext) if ext == "csv" => save_csv(entries, target_path),
 
-        _ =>
-            save_raw(entries, &target_path)
+        _ => save_raw(entries, target_path),
     }
 }
 
@@ -28,7 +25,10 @@ pub fn save_raw(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::Resul
     let mut text_file = File::create(&path)?;
 
     let participants = collect_participants(protocol_entries);
-    write(&mut text_file, &format!("Participants: {:?}\n", participants))?;
+    write(
+        &mut text_file,
+        &format!("Participants: {:?}\n", participants),
+    )?;
 
     for e in protocol_entries {
         text_file.write_all(format!("{}\n", e).as_bytes())?
@@ -65,7 +65,10 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
         }
     }
 
-    write(&mut md_file, &format!("# Protocol {}\n", Local::now().format("%Y-%m-%d")))?;
+    write(
+        &mut md_file,
+        &format!("# Protocol {}\n", Local::now().format("%Y-%m-%d")),
+    )?;
 
     write(&mut md_file, "\n## Participants\n")?;
     for participant in participants {
@@ -76,36 +79,42 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
     write(&mut md_file, "|Time|Said by|text|\n")?;
     write(&mut md_file, "| --- | --- | ---|\n")?;
     for e in infos {
-        write(&mut md_file,
-              &format!(
-                  "|{}|{}|{}|\n",
-                  e.timestamp.format("%H:%M:%S"),
-                  e.owner,
-                  e.message,
-              ))?;
+        write(
+            &mut md_file,
+            &format!(
+                "|{}|{}|{}|\n",
+                e.timestamp.format("%H:%M:%S"),
+                e.owner,
+                e.message,
+            ),
+        )?;
     }
 
     write(&mut md_file, "---\n## Decisions\n")?;
     for e in decisions {
-        write(&mut md_file,
-              &format!(
-                  "* <> {} - {}/{}\n",
-                  e.message,
-                  e.owner,
-                  e.timestamp.format("%H:%M:%S")
-              ))?;
+        write(
+            &mut md_file,
+            &format!(
+                "* <> {} - {}/{}\n",
+                e.message,
+                e.owner,
+                e.timestamp.format("%H:%M:%S")
+            ),
+        )?;
     }
 
     write(&mut md_file, "---\n## Tasks\n")?;
     for e in tasks {
-        write(&mut md_file,
-              &format!(
-                  "* [] {} - {}/{}\n",
-                  e.message,
-                  e.owner,
-                  e.timestamp.format("%H:%M:%S")
-              ))?;
-    };
+        write(
+            &mut md_file,
+            &format!(
+                "* [] {} - {}/{}\n",
+                e.message,
+                e.owner,
+                e.timestamp.format("%H:%M:%S")
+            ),
+        )?;
+    }
 
     Ok(())
 }

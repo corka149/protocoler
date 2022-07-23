@@ -1,20 +1,20 @@
 //! A minimalistic typer for protocols.
 
-use cursive::{Cursive, CursiveRunnable};
 use cursive::event::{Event, Key};
 use cursive::traits::*;
 use cursive::views::{LinearLayout, Panel};
+use cursive::{Cursive, CursiveRunnable};
 
-use crate::table::{BasicColumn, EntryType, ProtocolEntry, ProtocolTable, table_name};
+use crate::table::{table_name, BasicColumn, EntryType, ProtocolEntry, ProtocolTable};
 
+mod dialog;
+mod error;
+mod help;
+mod persist;
+mod report;
 mod style;
 mod table;
-mod help;
-mod dialog;
-mod report;
-mod persist;
 mod util;
-mod error;
 
 const DIALOG_NAME: &str = "app_dialog";
 
@@ -28,11 +28,7 @@ fn main() {
         .child(help::hint_bar())
         .full_screen();
 
-    app.add_fullscreen_layer(
-        Panel::new(full_view)
-            .title("Protocoler")
-            .full_screen(),
-    );
+    app.add_fullscreen_layer(Panel::new(full_view).title("Protocoler").full_screen());
 
     add_callbacks(&mut app);
 
@@ -52,12 +48,12 @@ fn add_callbacks(app: &mut CursiveRunnable) {
     });
     app.add_global_callback('s', |app| {
         let content = persist::get_target_path(app)
-            .map(
-                |path|
-                    path.to_str().map(
-                        |path_str| path_str.to_string()
-                    ).unwrap_or_default()
-            ).unwrap_or_default();
+            .map(|path| {
+                path.to_str()
+                    .map(|path_str| path_str.to_string())
+                    .unwrap_or_default()
+            })
+            .unwrap_or_default();
 
         app.add_layer(persist::save_dialog(content).with_name(DIALOG_NAME))
     });
@@ -89,7 +85,7 @@ fn add_callbacks(app: &mut CursiveRunnable) {
 /// It will use either the entered path or fallback to a temporary CSV path.
 fn save_before_exit(app: &mut CursiveRunnable) {
     let tar_path = persist::get_target_path(app)
-        .map(|path| Ok(path))
+        .map(Ok)
         .unwrap_or_else(util::tmp_csv_path);
 
     app.call_on_name(table_name(), |table: &mut ProtocolTable| {

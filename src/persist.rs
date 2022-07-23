@@ -7,8 +7,8 @@ use cursive::traits::*;
 use cursive::utils::markup::StyledString;
 use cursive::views::{Dialog, DummyView, EditView, NamedView, Panel, TextView, ViewRef};
 
-use crate::{Cursive, error, LinearLayout, ProtocolTable, report, table_name};
 use crate::persist::SaveStatus::{Saved, Unsaved};
+use crate::{error, report, table_name, Cursive, LinearLayout, ProtocolTable};
 
 /// Persistence status of the current protocol.
 #[derive(Debug, PartialEq)]
@@ -25,10 +25,10 @@ impl SaveStatus {
             path if !path.starts_with('*') && !path.ends_with('*') => {
                 match PathBuf::from_str(path) {
                     Ok(path) => Saved { path },
-                    Err(_) => Unsaved
+                    Err(_) => Unsaved,
                 }
             }
-            _ => Unsaved
+            _ => Unsaved,
         }
     }
 }
@@ -57,8 +57,8 @@ impl From<SaveStatus> for String {
             Unsaved => SaveStatus::UNSAVED.to_string(),
             Saved { path } => match path.to_str() {
                 None => SaveStatus::UNSAVED.to_string(),
-                Some(path) => path.to_string()
-            }
+                Some(path) => path.to_string(),
+            },
         }
     }
 }
@@ -70,16 +70,16 @@ const TARGET_FILE_INPUT_NAME: &str = "target_file_input";
 
 /// Dialog for entering the save path and triggering the save process.
 pub fn save_dialog(content: String) -> Dialog {
-    let hint = TextView::new(
-        "File extension determines format. (.csv, .md and plain (any other ext.))"
-    );
+    let hint =
+        TextView::new("File extension determines format. (.csv, .md and plain (any other ext.))");
 
     let target_input = Panel::new(
         EditView::default()
             .content(content)
             .with_name(TARGET_FILE_INPUT_NAME)
-            .min_width(50)
-    ).title("Target path");
+            .min_width(50),
+    )
+    .title("Target path");
 
     Dialog::default()
         .title("Save protocol")
@@ -89,7 +89,7 @@ pub fn save_dialog(content: String) -> Dialog {
                 .child(target_input)
                 .child(DummyView)
                 .child(hint)
-                .child(DummyView)
+                .child(DummyView),
         )
         .button("Save", save)
         .button("Cancel", |app| {
@@ -108,7 +108,7 @@ pub fn get_target_path(app: &mut Cursive) -> Option<PathBuf> {
         let src = content.source();
         match SaveStatus::from_str(src) {
             Unsaved => None,
-            Saved { path } => Some(path)
+            Saved { path } => Some(path),
         }
     } else {
         None

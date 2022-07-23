@@ -4,9 +4,9 @@ use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
 
 use chrono::prelude::*;
-use cursive::Cursive;
 use cursive::traits::*;
 use cursive::views::ViewRef;
+use cursive::Cursive;
 use cursive_table_view::{TableView, TableViewItem};
 
 use crate::dialog;
@@ -117,8 +117,8 @@ impl TableViewItem<BasicColumn> for ProtocolEntry {
     }
 
     fn cmp(&self, other: &Self, column: BasicColumn) -> Ordering
-        where
-            Self: Sized,
+    where
+        Self: Sized,
     {
         match column {
             BasicColumn::Timestamp => self.timestamp.cmp(&other.timestamp),

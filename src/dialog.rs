@@ -5,7 +5,7 @@ use cursive::traits::*;
 use cursive::views::{Dialog, EditView, Panel, SelectView, TextArea, ViewRef};
 use cursive_table_view::TableView;
 
-use crate::{BasicColumn, EntryType, LinearLayout, ProtocolEntry, table};
+use crate::{table, BasicColumn, EntryType, LinearLayout, ProtocolEntry};
 
 const DIALOG_WIDTH: usize = 70;
 
@@ -19,13 +19,25 @@ pub fn add_dialog() -> Dialog {
         .title("Add")
         .button("Add", move |s| {
             // GET FIELDS
-            let owner = s.find_name::<EditView>("owner").map(|e| e.get_content().to_string()).unwrap_or_default();
-            let message = s.find_name::<TextArea>("message").map(|t| t.get_content().to_string()).unwrap_or_default();
-            let entry_type = s.find_name::<SelectView<EntryType>>("type_select").map(get_selected_type).unwrap_or_default();
+            let owner = s
+                .find_name::<EditView>("owner")
+                .map(|e| e.get_content().to_string())
+                .unwrap_or_default();
+            let message = s
+                .find_name::<TextArea>("message")
+                .map(|t| t.get_content().to_string())
+                .unwrap_or_default();
+            let entry_type = s
+                .find_name::<SelectView<EntryType>>("type_select")
+                .map(get_selected_type)
+                .unwrap_or_default();
 
-            s.call_on_name(table::table_name(), |table: &mut TableView<ProtocolEntry, BasicColumn>| {
-                add_entry(table, entry_type, owner, message);
-            });
+            s.call_on_name(
+                table::table_name(),
+                |table: &mut TableView<ProtocolEntry, BasicColumn>| {
+                    add_entry(table, entry_type, owner, message);
+                },
+            );
             s.pop_layer();
         })
         .button("Cancel", |s| {
@@ -33,7 +45,12 @@ pub fn add_dialog() -> Dialog {
         })
 }
 
-fn add_entry(table: &mut TableView<ProtocolEntry, BasicColumn>, entry_type: EntryType, owner: String, message: String) {
+fn add_entry(
+    table: &mut TableView<ProtocolEntry, BasicColumn>,
+    entry_type: EntryType,
+    owner: String,
+    message: String,
+) {
     table.insert_item(ProtocolEntry::new(entry_type, owner, message));
 }
 
@@ -41,11 +58,9 @@ fn add_dialog_content() -> LinearLayout {
     LinearLayout::vertical()
         .child(
             // OWNER
-            Panel::new(
-                EditView::default()
-                    .content("")
-                    .with_name("owner")
-            ).title("Owner").min_width(DIALOG_WIDTH)
+            Panel::new(EditView::default().content("").with_name("owner"))
+                .title("Owner")
+                .min_width(DIALOG_WIDTH),
         )
         .child(
             // MESSAGE
@@ -53,12 +68,12 @@ fn add_dialog_content() -> LinearLayout {
                 TextArea::default()
                     .content("")
                     .with_name("message")
-                    .min_height(10)
-            ).title("Message").min_width(DIALOG_WIDTH)
+                    .min_height(10),
+            )
+            .title("Message")
+            .min_width(DIALOG_WIDTH),
         )
-        .child(
-            type_select(None).with_name("type_select")
-        )
+        .child(type_select(None).with_name("type_select"))
 }
 
 // ===== ===== EDIT DIALOG ===== =====
@@ -71,13 +86,25 @@ pub fn edit_dialog(entry: &ProtocolEntry) -> Dialog {
         .title("Edit")
         .button("Edit", move |s| {
             // GET FIELDS
-            let owner = s.find_name::<EditView>("owner").map(|e| e.get_content().to_string()).unwrap_or_default();
-            let message = s.find_name::<TextArea>("message").map(|t| t.get_content().to_string()).unwrap_or_default();
-            let entry_type = s.find_name::<SelectView<EntryType>>("type_select").map(get_selected_type).unwrap_or_default();
+            let owner = s
+                .find_name::<EditView>("owner")
+                .map(|e| e.get_content().to_string())
+                .unwrap_or_default();
+            let message = s
+                .find_name::<TextArea>("message")
+                .map(|t| t.get_content().to_string())
+                .unwrap_or_default();
+            let entry_type = s
+                .find_name::<SelectView<EntryType>>("type_select")
+                .map(get_selected_type)
+                .unwrap_or_default();
 
-            s.call_on_name(table::table_name(), |t: &mut TableView<ProtocolEntry, BasicColumn>| {
-                edit_entry(t, entry_type, owner, message);
-            });
+            s.call_on_name(
+                table::table_name(),
+                |t: &mut TableView<ProtocolEntry, BasicColumn>| {
+                    edit_entry(t, entry_type, owner, message);
+                },
+            );
             s.pop_layer();
         })
         .button("Cancel", |s| {
@@ -92,8 +119,10 @@ fn edit_dialog_content(entry: &ProtocolEntry) -> LinearLayout {
             Panel::new(
                 EditView::default()
                     .content(entry.owner.clone())
-                    .with_name("owner")
-            ).title("Owner").min_width(DIALOG_WIDTH)
+                    .with_name("owner"),
+            )
+            .title("Owner")
+            .min_width(DIALOG_WIDTH),
         )
         .child(
             // MESSAGE
@@ -101,17 +130,26 @@ fn edit_dialog_content(entry: &ProtocolEntry) -> LinearLayout {
                 TextArea::default()
                     .content(entry.message.clone())
                     .with_name("message")
-                    .min_height(10)
-            ).title("Message").min_width(DIALOG_WIDTH)
+                    .min_height(10),
+            )
+            .title("Message")
+            .min_width(DIALOG_WIDTH),
         )
-        .child(
-            type_select(Some(entry.entry_type)).with_name("type_select")
-        )
+        .child(type_select(Some(entry.entry_type)).with_name("type_select"))
 }
 
-fn edit_entry(table: &mut TableView<ProtocolEntry, BasicColumn>, entry_type: EntryType, owner: String, message: String) {
+fn edit_entry(
+    table: &mut TableView<ProtocolEntry, BasicColumn>,
+    entry_type: EntryType,
+    owner: String,
+    message: String,
+) {
     if let Some(old) = table::get_current_item(table) {
-        let new = old.clone().entry_type(entry_type).message(message).owner(owner);
+        let new = old
+            .clone()
+            .entry_type(entry_type)
+            .message(message)
+            .owner(owner);
 
         if let Some(index) = table.item() {
             table.remove_item(index);
@@ -133,7 +171,7 @@ fn type_select(selected: Option<EntryType>) -> SelectView<EntryType> {
         match selected {
             EntryType::Info => select.selected(0),
             EntryType::Task => select.selected(1),
-            EntryType::Decision => select.selected(2)
+            EntryType::Decision => select.selected(2),
         }
     } else {
         select
@@ -146,6 +184,6 @@ fn get_selected_type(s: ViewRef<SelectView<EntryType>>) -> EntryType {
 
     match maybe_type {
         None => EntryType::default(),
-        Some((_, selected_type)) => selected_type.to_owned()
+        Some((_, selected_type)) => selected_type.to_owned(),
     }
 }

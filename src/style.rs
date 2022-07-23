@@ -7,12 +7,18 @@ pub fn set_default_style(theme: &mut Theme) {
     theme.shadow = false;
     theme.borders = BorderStyle::Simple;
 
-    theme.palette.set_color("Background", Color::TerminalDefault);
+    theme
+        .palette
+        .set_color("Background", Color::TerminalDefault);
     theme.palette.set_color("Shadow", Color::TerminalDefault);
     theme.palette.set_color("View", Color::TerminalDefault);
     theme.palette.set_color("Primary", Color::TerminalDefault);
     theme.palette.set_color("Secondary", Color::TerminalDefault);
     theme.palette.set_color("Tertiary", Color::TerminalDefault);
-    theme.palette.set_color("TitlePrimary", Color::TerminalDefault);
-    theme.palette.set_color("TitleSecondary", Color::TerminalDefault);
+    theme
+        .palette
+        .set_color("TitlePrimary", Color::TerminalDefault);
+    theme
+        .palette
+        .set_color("TitleSecondary", Color::TerminalDefault);
 }

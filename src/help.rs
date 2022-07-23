@@ -1,8 +1,8 @@
 //! Hint and help.
 
+use crate::{error, persist};
 use cursive::traits::*;
 use cursive::views::{Dialog, DummyView, LinearLayout, ListView, Panel, TextView};
-use crate::{error, persist};
 
 /// Creates a help menu.
 pub fn help_menu() -> Dialog {
@@ -14,10 +14,9 @@ pub fn help_menu() -> Dialog {
         .child("s", TextView::new("Save protocol"))
         .child("q", TextView::new("Quit"));
 
-    Dialog::around(help)
-        .button("Cancel", |s| {
-            s.pop_layer();
-        })
+    Dialog::around(help).button("Cancel", |s| {
+        s.pop_layer();
+    })
 }
 
 // Creates a hint bar with short information.
@@ -29,8 +28,5 @@ pub fn hint_bar() -> LinearLayout {
         .child(DummyView::full_width(DummyView))
         .child(persist::target_fila_text());
 
-    LinearLayout::horizontal().child(
-        Panel::new(content).title("Hint").full_width()
-    )
+    LinearLayout::horizontal().child(Panel::new(content).title("Hint").full_width())
 }
-
