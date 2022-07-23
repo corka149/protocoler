@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+    use std::path::PathBuf;
 use std::str::FromStr;
 
 use cursive::traits::*;
