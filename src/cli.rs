@@ -15,6 +15,10 @@ pub struct Cli {
     #[clap(short, long, action)]
     pub disable_autosave: bool,
 
+    /// Activates no theme and fallback to primitive theme.
+    #[clap(short, long, action)]
+    pub no_theme: bool,
+
     #[clap(subcommand)]
     command: Option<Commands>
 }

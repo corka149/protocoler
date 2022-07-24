@@ -45,7 +45,9 @@ fn launch_tui(cli: Cli) {
 
     add_callbacks(&mut app);
 
-    app.update_theme(style::set_default_style);
+    if !cli.no_theme {
+        app.update_theme(style::set_default_style);
+    }
 
     app.run();
 
