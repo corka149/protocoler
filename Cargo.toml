@@ -2,13 +2,18 @@
 name = "protocoler"
 version = "0.3.0"
 edition = "2018"
+authors = ["Sebastian Ziemann <corka149@mailbox.org>"]
+description = "A Fast and minimalistic protocol generator powered by Rust. It can output protocols in different formats."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = "2.33.3"
 chrono = "0.4.19"
 cursive_table_view = "0.14"
+
+[dependencies.clap]
+version = "3.2.14"
+features = ["derive"]
 
 [dependencies.cursive]
 version = "*"

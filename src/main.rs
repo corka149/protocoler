@@ -1,11 +1,12 @@
 //! A minimalistic typer for protocols.
 
+use cursive::{Cursive, CursiveRunnable};
 use cursive::event::{Event, Key};
 use cursive::traits::*;
 use cursive::views::{LinearLayout, Panel};
-use cursive::{Cursive, CursiveRunnable};
 
-use crate::table::{table_name, BasicColumn, EntryType, ProtocolEntry, ProtocolTable};
+use crate::cli::Cli;
+use crate::table::{BasicColumn, EntryType, ProtocolEntry, ProtocolTable, table_name};
 
 mod dialog;
 mod error;
@@ -15,11 +16,23 @@ mod report;
 mod style;
 mod table;
 mod util;
+mod cli;
 
 const DIALOG_NAME: &str = "app_dialog";
 
 /// MAIN
 fn main() {
+    let cli = cli::parse();
+
+    if cli.should_launch_subcommand() {
+        unimplemented!()
+    } else {
+        launch_tui(cli);
+    }
+}
+
+///
+fn launch_tui(cli: Cli) {
     let mut app = cursive::default();
     let table = table::new();
 
@@ -36,7 +49,7 @@ fn main() {
 
     app.run();
 
-    save_before_exit(&mut app);
+    save_before_exit(&mut app, &cli);
 }
 
 /// Central place for adding callbacks.
@@ -83,7 +96,11 @@ fn add_callbacks(app: &mut CursiveRunnable) {
 
 /// Tries to save last state of the table.
 /// It will use either the entered path or fallback to a temporary CSV path.
-fn save_before_exit(app: &mut CursiveRunnable) {
+fn save_before_exit(app: &mut CursiveRunnable, cli: &Cli) {
+    if persist::get_target_path(app).is_none() && cli.disable_autosave {
+        return;
+    }
+
     let tar_path = persist::get_target_path(app)
         .map(Ok)
         .unwrap_or_else(util::tmp_csv_path);
