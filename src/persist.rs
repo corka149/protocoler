@@ -8,7 +8,7 @@ use cursive::utils::markup::StyledString;
 use cursive::views::{Dialog, DummyView, EditView, NamedView, Panel, TextView, ViewRef};
 
 use crate::persist::SaveStatus::{Saved, Unsaved};
-use crate::{error, report, table_name, Cursive, LinearLayout, ProtocolTable};
+use crate::{error, report, Cursive, LinearLayout, ProtocolTable, table};
 
 /// Persistence status of the current protocol.
 #[derive(Debug, PartialEq)]
@@ -117,7 +117,7 @@ pub fn get_target_path(app: &mut Cursive) -> Option<PathBuf> {
 
 fn save(app: &mut Cursive) {
     let text_box = app.find_name::<TextView>(TARGET_FILE_BOX_NAME);
-    let table: Option<ViewRef<ProtocolTable>> = app.find_name(table_name());
+    let table: Option<ViewRef<ProtocolTable>> = app.find_name(table::table_name());
 
     app.call_on_name(error::ERROR_OUTPUT, |err: &mut TextView| {
         err.set_content("-")

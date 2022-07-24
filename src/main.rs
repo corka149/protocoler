@@ -6,7 +6,7 @@ use cursive::traits::*;
 use cursive::views::{LinearLayout, Panel};
 
 use crate::cli::Cli;
-use crate::table::{BasicColumn, EntryType, ProtocolEntry, ProtocolTable, table_name};
+use crate::table::{BasicColumn, EntryType, ProtocolEntry, ProtocolTable};
 
 mod dialog;
 mod error;
@@ -107,7 +107,7 @@ fn save_before_exit(app: &mut CursiveRunnable, cli: &Cli) {
         .map(Ok)
         .unwrap_or_else(util::tmp_csv_path);
 
-    app.call_on_name(table_name(), |table: &mut ProtocolTable| {
+    app.call_on_name(table::table_name(), |table: &mut ProtocolTable| {
         let entries = table.borrow_items();
 
         if let Ok(tar_path) = tar_path {
