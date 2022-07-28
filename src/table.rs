@@ -2,6 +2,7 @@
 
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
+use std::ops::Index;
 
 use chrono::prelude::*;
 use cursive::traits::*;
@@ -10,6 +11,7 @@ use cursive::Cursive;
 use cursive_table_view::{TableView, TableViewItem};
 
 use crate::dialog;
+use crate::error::InvalidCsvError;
 
 pub type ProtocolTable = TableView<ProtocolEntry, BasicColumn>;
 
@@ -36,6 +38,17 @@ impl Display for EntryType {
             EntryType::Info => write!(f, "INFO"),
             EntryType::Decision => write!(f, "DECISION"),
             EntryType::Task => write!(f, "TASK"),
+        }
+    }
+}
+
+impl From<&str> for EntryType {
+    fn from(text: &str) -> Self {
+        match text {
+            "INFO" => EntryType::Info,
+            "DECISION" => EntryType::Decision,
+            "TASK" => EntryType::Task,
+            _ => EntryType::Info,
         }
     }
 }
@@ -91,6 +104,33 @@ impl ProtocolEntry {
             "'{}','{}','{}','{}'",
             self.timestamp, self.entry_type, self.owner, self.message
         )
+    }
+
+    /// Creates a entry from a CSV row.
+    pub fn from_csv(csv: &str) -> Result<Self, InvalidCsvError> {
+        let split: Vec<&str> = csv
+            .trim_start_matches('\'')
+            .trim_end_matches('\'')
+            .split("','")
+            .collect::<Vec<&str>>();
+
+        if split.len() != 4 {
+            return Err(InvalidCsvError);
+        }
+
+        let timestamp = split.index(0);
+        let timestamp = timestamp.parse::<DateTime<Local>>();
+
+        if let Ok(timestamp) = timestamp {
+            Ok(ProtocolEntry {
+                timestamp,
+                entry_type: EntryType::from(*split.index(1)),
+                owner: split.index(2).to_string(),
+                message: split.index(3).to_string(),
+            })
+        } else {
+            Err(InvalidCsvError)
+        }
     }
 }
 
@@ -183,4 +223,36 @@ pub fn get_current_item(table: &ProtocolTable) -> Option<&ProtocolEntry> {
     }
 
     None
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_entry_from_csv() {
+        // Arrange
+        let row = "'2022-07-28 07:08:47.318393663 +02:00','DECISION','Cesar','Sleeps tonight'";
+
+        // Act
+        let parsed = ProtocolEntry::from_csv(row);
+
+        // Assert
+        assert!(parsed.is_ok());
+
+        let entry = parsed.unwrap();
+
+        assert_eq!(entry.entry_type, EntryType::Decision);
+        assert_eq!(entry.owner, "Cesar");
+        assert_eq!(entry.message, "Sleeps tonight");
+
+        let timestamp = entry.timestamp;
+
+        assert_eq!(timestamp.year(), 2022);
+        assert_eq!(timestamp.month(), 7);
+        assert_eq!(timestamp.day(), 28);
+        assert_eq!(timestamp.hour(), 7);
+        assert_eq!(timestamp.minute(), 8);
+        assert_eq!(timestamp.second(), 47);
+    }
 }

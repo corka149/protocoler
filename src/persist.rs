@@ -1,5 +1,8 @@
 //! Module for the save process.
 
+use std::fs::File;
+use std::io;
+use std::io::BufRead;
 use std::path::PathBuf;
 use std::str::FromStr;
 
@@ -8,7 +11,7 @@ use cursive::utils::markup::StyledString;
 use cursive::views::{Dialog, DummyView, EditView, NamedView, Panel, TextView, ViewRef};
 
 use crate::persist::SaveStatus::{Saved, Unsaved};
-use crate::{error, report, Cursive, LinearLayout, ProtocolTable, table};
+use crate::{error, report, Cursive, LinearLayout, ProtocolTable, table, ProtocolEntry};
 
 /// Persistence status of the current protocol.
 #[derive(Debug, PartialEq)]
@@ -113,6 +116,21 @@ pub fn get_target_path(app: &mut Cursive) -> Option<PathBuf> {
     } else {
         None
     }
+}
+
+/// Loads protocol entries from the given path.
+pub fn load_from_csv(csv_path: PathBuf) -> io::Result<Vec<ProtocolEntry>>  {
+    let file = File::open(csv_path)?;
+    let lines = io::BufReader::new(file).lines();
+    let mut entries: Vec<ProtocolEntry> = Vec::new();
+
+    for line in lines.flatten() {
+        if let Ok(entry) = ProtocolEntry::from_csv(&line) {
+            entries.push(entry);
+        }
+    }
+
+    Ok(entries)
 }
 
 fn save(app: &mut Cursive) {
