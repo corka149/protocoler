@@ -15,7 +15,6 @@ mod persist;
 mod report;
 mod style;
 mod table;
-mod util;
 mod cli;
 
 const DIALOG_NAME: &str = "app_dialog";
@@ -105,7 +104,7 @@ fn save_before_exit(app: &mut CursiveRunnable, cli: &Cli) {
 
     let tar_path = persist::get_target_path(app)
         .map(Ok)
-        .unwrap_or_else(util::tmp_csv_path);
+        .unwrap_or_else(report::tmp_csv_path);
 
     app.call_on_name(table::table_name(), |table: &mut ProtocolTable| {
         let entries = table.borrow_items();

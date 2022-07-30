@@ -1,13 +1,27 @@
 //! `report` for saving protocols in different formats.
 
 use std::fs::File;
-use std::io;
+use std::{env, io};
 use std::io::prelude::*;
 use std::path::PathBuf;
+use std::time::{SystemTime, SystemTimeError, UNIX_EPOCH};
 
 use chrono::Local;
 
 use crate::{EntryType, ProtocolEntry};
+
+
+pub fn tmp_csv_path() -> Result<PathBuf, SystemTimeError> {
+    let duration = SystemTime::now().duration_since(UNIX_EPOCH)?;
+    let timestamp = duration.as_secs();
+
+    let mut temp_path = env::temp_dir();
+    let protocol_file = format!("{}_protocol.csv", timestamp);
+    temp_path.push(protocol_file);
+
+    Ok(temp_path)
+}
+
 
 /// Saves the protocol in the format inferred from the file extension.
 pub fn save(entries: &[ProtocolEntry], target_path: &PathBuf) -> io::Result<()> {
