@@ -1,13 +1,14 @@
 //! A minimalistic typer for protocols.
 
-use cursive::{Cursive, CursiveRunnable};
 use cursive::event::{Event, Key};
 use cursive::traits::*;
 use cursive::views::{LinearLayout, Panel};
+use cursive::{Cursive, CursiveRunnable};
 
 use crate::cli::Cli;
 use crate::table::{BasicColumn, EntryType, ProtocolEntry, ProtocolTable};
 
+mod cli;
 mod dialog;
 mod error;
 mod help;
@@ -15,7 +16,6 @@ mod persist;
 mod report;
 mod style;
 mod table;
-mod cli;
 
 const DIALOG_NAME: &str = "app_dialog";
 

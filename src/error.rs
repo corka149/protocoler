@@ -1,6 +1,6 @@
-use std::fmt;
 use cursive::traits::*;
 use cursive::views::{NamedView, TextView};
+use std::fmt;
 
 pub const ERROR_OUTPUT: &str = "error_output";
 

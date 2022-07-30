@@ -20,16 +20,14 @@ pub struct Cli {
     pub no_theme: bool,
 
     #[clap(subcommand)]
-    command: Option<Commands>
+    command: Option<Commands>,
 }
 
 impl Cli {
-
     /// Determines whether a subcommand should be executed
     pub fn should_launch_subcommand(&self) -> bool {
         self.command.is_some()
     }
-
 }
 
 #[derive(Subcommand)]
@@ -43,7 +41,7 @@ enum Commands {
         /// Path of the new format. The file extensions will determine the format (.csv, .md or .txt).
         #[clap(value_parser)]
         target: PathBuf,
-    }
+    },
 }
 
 /// Parses command line args.

@@ -11,7 +11,7 @@ use cursive::utils::markup::StyledString;
 use cursive::views::{Dialog, DummyView, EditView, NamedView, Panel, TextView, ViewRef};
 
 use crate::persist::SaveStatus::{Saved, Unsaved};
-use crate::{error, report, Cursive, LinearLayout, ProtocolTable, table, ProtocolEntry};
+use crate::{error, report, table, Cursive, LinearLayout, ProtocolEntry, ProtocolTable};
 
 /// Persistence status of the current protocol.
 #[derive(Debug, PartialEq)]
@@ -119,7 +119,7 @@ pub fn get_target_path(app: &mut Cursive) -> Option<PathBuf> {
 }
 
 /// Loads protocol entries from the given path.
-pub fn load_from_csv(csv_path: PathBuf) -> io::Result<Vec<ProtocolEntry>>  {
+pub fn load_from_csv(csv_path: PathBuf) -> io::Result<Vec<ProtocolEntry>> {
     let file = File::open(csv_path)?;
     let lines = io::BufReader::new(file).lines();
     let mut entries: Vec<ProtocolEntry> = Vec::new();
