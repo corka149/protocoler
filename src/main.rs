@@ -33,7 +33,12 @@ fn main() {
 ///
 fn launch_tui(cli: Cli) {
     let mut app = cursive::default();
-    let table = table::new();
+    let mut table = table::new();
+
+    if let Some(csv_path) = &cli.source {
+        let entries = persist::load_from_csv(csv_path).expect("Could not load csv file");
+        table.set_items(entries);
+    }
 
     let full_view = LinearLayout::vertical()
         .child(table.with_name(table::table_name()).full_height())

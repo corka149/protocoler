@@ -119,7 +119,7 @@ pub fn get_target_path(app: &mut Cursive) -> Option<PathBuf> {
 }
 
 /// Loads protocol entries from the given path.
-pub fn load_from_csv(csv_path: PathBuf) -> io::Result<Vec<ProtocolEntry>> {
+pub fn load_from_csv(csv_path: &PathBuf) -> io::Result<Vec<ProtocolEntry>> {
     let file = File::open(csv_path)?;
     let lines = io::BufReader::new(file).lines();
     let mut entries: Vec<ProtocolEntry> = Vec::new();
