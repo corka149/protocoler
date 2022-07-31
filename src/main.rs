@@ -24,7 +24,9 @@ fn main() {
     let cli = cli::parse();
 
     if cli.should_launch_subcommand() {
-        unimplemented!()
+        if let Err(err) = cli.execute_sub_cmd() {
+            eprintln!("Subcommand failed: {err}");
+        }
     } else {
         launch_tui(cli);
     }
@@ -36,8 +38,10 @@ fn launch_tui(cli: Cli) {
     let mut table = table::new();
 
     if let Some(csv_path) = &cli.source {
-        let entries = persist::load_from_csv(csv_path).expect("Could not load csv file");
-        table.set_items(entries);
+        match persist::load_from_csv(csv_path) {
+            Ok(entries) => table.set_items(entries),
+            Err(err) => eprintln!("Could not load file: {err}")
+        };
     }
 
     let full_view = LinearLayout::vertical()
