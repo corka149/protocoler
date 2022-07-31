@@ -102,7 +102,7 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
         )?;
     }
 
-    write(&mut md_file, "---\n## Decisions\n")?;
+    write(&mut md_file, "\n---\n\n## Decisions\n")?;
     for e in decisions {
         write(
             &mut md_file,
@@ -115,7 +115,7 @@ pub fn save_markdown(protocol_entries: &[ProtocolEntry], path: &PathBuf) -> io::
         )?;
     }
 
-    write(&mut md_file, "---\n## Tasks\n")?;
+    write(&mut md_file, "\n---\n\n## Tasks\n")?;
     for e in tasks {
         write(
             &mut md_file,
