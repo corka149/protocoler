@@ -230,29 +230,26 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_entry_from_csv() {
+    fn test_entry_to_and_from_csv() {
         // Arrange
-        let row = "'2022-07-28 07:08:47.318393663 +02:00','DECISION','Cesar','Sleeps tonight'";
+        let entry = ProtocolEntry::new(
+            EntryType::Info,
+            "Alice".to_string(),
+            "Sleeps or something like that".to_string()
+        );
 
         // Act
-        let parsed = ProtocolEntry::from_csv(row);
+        let row = entry.as_csv();
+        let parsed = ProtocolEntry::from_csv(&row);
 
         // Assert
         assert!(parsed.is_ok());
 
-        let entry = parsed.unwrap();
+        let parsed_entry = parsed.unwrap();
 
-        assert_eq!(entry.entry_type, EntryType::Decision);
-        assert_eq!(entry.owner, "Cesar");
-        assert_eq!(entry.message, "Sleeps tonight");
-
-        let timestamp = entry.timestamp;
-
-        assert_eq!(timestamp.year(), 2022);
-        assert_eq!(timestamp.month(), 7);
-        assert_eq!(timestamp.day(), 28);
-        assert_eq!(timestamp.hour(), 7);
-        assert_eq!(timestamp.minute(), 8);
-        assert_eq!(timestamp.second(), 47);
+        assert_eq!(entry.entry_type, parsed_entry.entry_type);
+        assert_eq!(entry.owner, parsed_entry.owner);
+        assert_eq!(entry.message, parsed_entry.message);
+        assert_eq!(entry.timestamp, parsed_entry.timestamp);
     }
 }
