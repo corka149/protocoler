@@ -13,6 +13,33 @@ It can output protocols in different formats.
 
 ![UI example](.github/screenshot.png)
 
+`protocoler` has also an CL interface.
+
+```
+> $ ./protocoler --help                                                                                                                                                                         [±main ●▴]
+protocoler 0.4.0
+Sebastian Ziemann <corka149@mailbox.org>
+A Fast and minimalistic protocol generator powered by Rust. It can output protocols in different
+formats.
+
+USAGE:
+    protocoler [OPTIONS] [SOURCE] [SUBCOMMAND]
+
+ARGS:
+    <SOURCE>    CSV file from which a previous recorded protocol should be loaded
+
+OPTIONS:
+    -d, --disable-autosave    Disable auto-save on quit
+    -h, --help                Print help information
+    -n, --no-theme            Activates no theme and fallback to primitive theme
+    -V, --version             Print version information
+
+SUBCOMMANDS:
+    convert    Converts a CSV protocol into another format
+    help       Print this message or the help of the given subcommand(s)
+
+```
+
 ## Build `protocoler`
 
 _Requirements:_
