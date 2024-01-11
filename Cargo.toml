@@ -8,14 +8,15 @@ description = "A Fast and minimalistic protocol generator powered by Rust. It ca
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = "0.4.19"
+chrono = "0.4.31"
 cursive_table_view = "0.14"
+trycmd = "0.14.19"
 
 [dependencies.clap]
 version = "3.2.14"
 features = ["derive"]
 
 [dependencies.cursive]
-version = "*"
+version = "0.20.0"
 default-features = false
 features = ["crossterm-backend"]

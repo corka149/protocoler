@@ -16,7 +16,7 @@ It can output protocols in different formats.
 `protocoler` has also an CL interface.
 
 ```
-> $ ./protocoler --help                                                                                                                                                                         [±main ●▴]
+$ ./protocoler --help                                                                                                                                                                         [±main ●▴]
 protocoler 0.4.0
 Sebastian Ziemann <corka149@mailbox.org>
 A Fast and minimalistic protocol generator powered by Rust. It can output protocols in different
