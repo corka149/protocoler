@@ -13,7 +13,7 @@ cursive_table_view = "0.14"
 trycmd = "0.14.19"
 
 [dependencies.clap]
-version = "3.2.14"
+version = "4.4.15"
 features = ["derive"]
 
 [dependencies.cursive]
